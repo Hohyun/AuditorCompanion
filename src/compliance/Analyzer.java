@@ -122,7 +122,7 @@ public class Analyzer extends SwingWorker<Void,Void>{
     @Override
     public void done() {
         parentApp.setCursor(null);
-        parentApp.setMessage(String.format(" Completed : %d files found. (Information file : %s)%n", 
+        parentApp.setMessage(String.format("Completed : %d files found. (Information file : %s)%n", 
                 extractFileCount, fileList.getAbsolutePath()));
         // System.out.format("Please refer to the processing info file : %s%n", fileList.getAbsolutePath());
         try {

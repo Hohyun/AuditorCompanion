@@ -37,9 +37,9 @@ import org.xml.sax.SAXException;
  *
  * @author hohkim
  */
-public class Indexer extends SwingWorker <Void, Void> {
-
-    File docDir;
+public class IndexerB extends SwingWorker <Void, Void> {
+    MyTableModel model;
+    //File docDir;
     Directory indexDir;
     Analyzer analyzer;
     ContentHandler contentHandler;
@@ -48,8 +48,8 @@ public class Indexer extends SwingWorker <Void, Void> {
     int counter;
     AuditCompanion companion;
 
-    public Indexer(String indexPath, String docsPath, DocLang lang, AuditCompanion companion) {
-        docDir = new File(docsPath);
+    public IndexerB(String indexPath, MyTableModel model, DocLang lang, AuditCompanion companion) {
+        //docDir = new File(docsPath);
         try {
             indexDir = FSDirectory.open(new File(indexPath));
             if (lang == DocLang.English) {
@@ -64,72 +64,7 @@ public class Indexer extends SwingWorker <Void, Void> {
         }
         counter = 0;
         this.companion = companion;
-    }
-
-    public void makeIndex() {
-        System.out.println("Indexing to directiory");
-        try {
-            IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_36, analyzer);
-            iwc.setOpenMode(OpenMode.CREATE);
-            IndexWriter writer;
-            writer = new IndexWriter(indexDir, iwc);
-            indexDocs(writer, docDir);
-            writer.close();
-        } catch (CorruptIndexException | LockObtainFailedException ex) {
-            System.out.println(ex.getMessage());
-        }
-        catch (SAXException | TikaException | IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-        Date end = new Date();
-	companion.setMessage(String.format("Indexing completed : total %d files", counter));
-    }
-
-    public void indexDocs(IndexWriter writer, File file) throws IOException, SAXException, TikaException {
-        if (file.canRead()) {
-            if (file.isDirectory()) {
-                String[] files = file.list();
-                // an IO error could occur
-                if (files != null) {
-                    for (int i = 0; i < files.length; i++) {
-                        indexDocs(writer, new File(file, files[i]));
-                    }
-                }
-            } else {
-                FileInputStream fis;
-                try {
-                    fis = new FileInputStream(file);
-                    // Tika --------------------------------------------------------
-                    contentHandler = new BodyContentHandler();
-                    metadata = new Metadata();
-                    parser = new AutoDetectParser();
-                    metadata.set(Metadata.RESOURCE_NAME_KEY, file.getName());
-                    parser.parse(fis, contentHandler, metadata, new ParseContext());
-                    // -------------------------------------------------------------
-                } catch (FileNotFoundException e) {
-                    // some temporary files raise this exception with an "access denied" message
-                    System.out.println(e);
-                    return;
-                }
-                try {
-                    Document doc = new Document();
-                    doc.add(new Field("path", "..\\Files", Store.YES, Index.NOT_ANALYZED));
-                    doc.add(new Field("filename", file.getName(), Store.YES, Index.ANALYZED));
-                    // Tika ---------------------------------------------------------
-                    doc.add(new Field("contents", contentHandler.toString(), Store.YES, 
-                            Index.ANALYZED));
-                    //doc.add(new Field("contents", contentHandler.toString(), Store.YES, 
-                     //       Index.ANALYZED, Field.TermVector.WITH_POSITIONS_OFFSETS));
-                    // --------------------------------------------------------------
-                    writer.addDocument(doc);
-                    counter++;
-                    // System.out.format("%5d. adding %s\n", counter, file);
-                    companion.setMessage(String.format("%5d. adding %s\n", counter, file));
-                } finally {
-                    fis.close();
-                }
-            }
-        }
+        this.model = model;
     }
 
     @Override
@@ -142,5 +77,64 @@ public class Indexer extends SwingWorker <Void, Void> {
     public void done() {
         companion.setCursor(null);
         companion.setStage(AuditCompanion.Stage.INDEX_CREATED);
+    }    
+   
+    public void makeIndex() {
+        System.out.println("Indexing to directiory");
+        try {
+            IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_36, analyzer);
+            iwc.setOpenMode(OpenMode.CREATE);
+            IndexWriter writer;
+            writer = new IndexWriter(indexDir, iwc);
+            indexDocs(writer);
+            writer.close();
+        } catch (CorruptIndexException | LockObtainFailedException ex) {
+            System.out.println(ex.getMessage());
+        }
+        catch (SAXException | TikaException | IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        Date end = new Date();
+	companion.setMessage(String.format("Indexing completed : total %d files", counter));
     }
+
+    public void indexDocs(IndexWriter writer) throws IOException, SAXException, TikaException {
+        
+        int row_cnt = model.getRowCount();
+        
+        for (int i = 0; i < row_cnt; i++) {
+            if ((Boolean) model.getValueAt(i, 0)) {
+                String src = model.getValueAt(i, 1).toString();
+                File file = new File(src);
+                FileInputStream fis;
+                try {
+                    fis = new FileInputStream(file);
+                    // Tika --------------------------------------------------------
+                    contentHandler = new BodyContentHandler();
+                    metadata = new Metadata();
+                    parser = new AutoDetectParser();
+                    metadata.set(Metadata.RESOURCE_NAME_KEY, file.getAbsolutePath());
+                    parser.parse(fis, contentHandler, metadata, new ParseContext());
+                    
+                    Document doc = new Document();
+                    doc.add(new Field("path", file.getParent(), Store.YES, Index.NOT_ANALYZED));
+                    doc.add(new Field("filename", file.getName(), Store.YES, Index.ANALYZED));
+                    // Tika ---------------------------------------------------------
+                    doc.add(new Field("contents", contentHandler.toString(), Store.YES, 
+                            Index.ANALYZED));
+                    // --------------------------------------------------------------
+                    writer.addDocument(doc);
+                    counter++;
+                    // System.out.format("%5d. adding %s\n", counter, file);
+                    companion.setMessage(String.format("%5d. adding %s\n", counter, file));                             
+                    // -------------------------------------------------------------
+                } catch (FileNotFoundException e) {
+                    // some temporary files raise this exception with an "access denied" message
+                    System.out.println(e);
+                    return;
+                }
+            }
+        } 
+    }
+
 }

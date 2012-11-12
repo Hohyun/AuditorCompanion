@@ -22,14 +22,14 @@ import javax.swing.JOptionPane;
  */
 public class Register extends javax.swing.JDialog {
 
-    private AuditCompanion parentApp;
+    private AuditCompanion companion;
     /**
      * Creates new form Register
      */
     public Register(JFrame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        parentApp = (AuditCompanion)parent;
+        companion = (AuditCompanion)parent;
     }
 
     /**
@@ -55,12 +55,13 @@ public class Register extends javax.swing.JDialog {
         comboLanguage = new javax.swing.JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Make New Case");
 
         jLabel1.setText("Case Name:");
 
-        jLabel3.setText("Auditor:");
+        jLabel3.setText("Auditor Name:");
 
-        buttonTarget.setText("Image Target:");
+        buttonTarget.setText("Case Directory:");
         buttonTarget.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonTargetActionPerformed(evt);
@@ -68,6 +69,7 @@ public class Register extends javax.swing.JDialog {
         });
 
         jLabel5.setFont(new java.awt.Font("Cooper Black", 1, 18)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("[ Case Registration ]");
 
         buttonCancel.setText("Cancel");
@@ -86,7 +88,7 @@ public class Register extends javax.swing.JDialog {
 
         textTarget.setToolTipText("");
 
-        jLabel2.setText("Language:");
+        jLabel2.setText("Document Language:");
 
         comboLanguage.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "English", "Korean", "Japanease" }));
         comboLanguage.addActionListener(new java.awt.event.ActionListener() {
@@ -99,19 +101,17 @@ public class Register extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(buttonTarget)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addGap(0, 6, Short.MAX_VALUE))
                             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,8 +124,8 @@ public class Register extends javax.swing.JDialog {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(comboLanguage, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(textTarget, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
-                                    .addComponent(textAuditor, javax.swing.GroupLayout.Alignment.LEADING))))
-                        .addGap(24, 24, 24))))
+                                    .addComponent(textAuditor, javax.swing.GroupLayout.Alignment.LEADING))))))
+                .addGap(24, 24, 24))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -177,25 +177,43 @@ public class Register extends javax.swing.JDialog {
                 || "".equals(textTarget.getText())) {
             JOptionPane.showMessageDialog(null, "Case name, Auditor, Target directorty information should be supplied.", "Case Registration Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            parentApp.setAuditor(textAuditor.getText());
-            parentApp.setTargetDir(textTarget.getText());
-            Date date = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            companion.setAuditor(textAuditor.getText());
+            
+            // Set Case Directory & File Directory & Index Directory
+            companion.setCaseDir(textTarget.getText());
+            companion.setFileDir(textTarget.getText() + "\\Files");
+            companion.setIndexDir(textTarget.getText() + "\\Index");
+            // File directory creation
+            File f = new File(textTarget.getText(), "Files");
+            if (!f.exists()) {
+                boolean isFileDirCreated = f.mkdir();
+                if (!isFileDirCreated) {
+                    companion.setMessage(String.format(" Error: couldn't create %s\\Files",
+                            f.getAbsolutePath()));
+                }
+            }         
+           
             String caseName = String.format("[ %s ] - %s", textCaseName.getText(), textAuditor.getText());
-            String caseInfo = String.format("%s (%s) Information.txt", caseName, formatter.format(date));
-            String fileList = String.format("%s (%s) File List.txt", textCaseName.getText(), 
-                    textAuditor.getText(), formatter.format(date));
-            parentApp.setCaseName(caseName);
-            parentApp.setCaseInfoFile(new File(textTarget.getText(), caseInfo));           
-            parentApp.setFileListFile(new File(textTarget.getText(), fileList));
+            companion.setCaseName(caseName);
+            
+            String caseInfo = String.format("%s (%s) Case.info", textCaseName.getText(), 
+                    textAuditor.getText());
+            File caseInfoFile = new File(textTarget.getText(), caseInfo);
+            companion.setCaseInfoFile(caseInfoFile);   
+            
+            String fileList = String.format("%s (%s) Files.txt", textCaseName.getText(), 
+                    textAuditor.getText());
+            File fileListFile = new File(textTarget.getText(), fileList);
+            companion.setFileListFile(fileListFile);
+            // Document Language Setting
             if (comboLanguage.getSelectedIndex() == 0) {
-                parentApp.setDocLang(AuditCompanion.DocLang.English);
+                companion.setDocLang(AuditCompanion.DocLang.English);
             } else if (comboLanguage.getSelectedIndex() == 1) {
-                parentApp.setDocLang(AuditCompanion.DocLang.Korean);
+                companion.setDocLang(AuditCompanion.DocLang.Korean);
             } if (comboLanguage.getSelectedIndex() == 2) {
-                parentApp.setDocLang(AuditCompanion.DocLang.Japanease);
+                companion.setDocLang(AuditCompanion.DocLang.Japanese);
             } 
-            createCaseInfoFile(caseName, caseInfo, fileList);
+            createCaseInfoFile(caseName, caseInfoFile, fileListFile);
             this.dispose();
         }
     }//GEN-LAST:event_buttonOKActionPerformed
@@ -209,26 +227,13 @@ public class Register extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_comboLanguageActionPerformed
 
-    public void createCaseInfoFile(String caseName, String caseInfo, String fileList) {
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(parentApp.getCaseInfoFile()))) {
-            bw.write("Case Name: " + caseName); 
+    public void createCaseInfoFile(String caseName, File caseInfo, File fileList) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(companion.getCaseInfoFile()))) {
+            bw.write("Case      : " + caseName); 
             bw.newLine();
-            bw.write("Auditor: " + textAuditor.getText());
+            bw.write("Language  : " + (String)comboLanguage.getSelectedItem());
             bw.newLine();
-            bw.write("Target Dir: " + textTarget.getText());
-            bw.newLine();
-            bw.write("Files  Dir: " + textTarget.getText() + "\\Files");
-            bw.newLine();
-            bw.write("Index  Dir: " + textTarget.getText() + "\\Index");
-            bw.newLine();
-            bw.write("Document Language: " + (String)comboLanguage.getSelectedItem());
-            bw.write("Date: " + formatter.format(date));
-            bw.newLine();
-            bw.write("Case Info: " + caseInfo);
-            bw.newLine();
-            bw.write("File List: " + fileList);
+            bw.write("File List : " + fileList.getName());
             bw.newLine();
             bw.close();
         } catch (IOException ex) {

@@ -19,13 +19,13 @@ import compliance.AuditCompanion.Stage;
  */
 public class Copier extends SwingWorker<Void,Void> {
     private MyTableModel model;
-    private AuditCompanion parentApp;
+    private AuditCompanion companion;
     private String targetFileDir;
 
-    public Copier (MyTableModel model, AuditCompanion parentApp) {
+    public Copier (MyTableModel model, AuditCompanion companion) {
         this.model = model;
-        this.parentApp = parentApp;
-        this.targetFileDir = parentApp.getTargetFileDir();
+        this.companion = companion;
+        this.targetFileDir = companion.getFileDir();
     }
     
     @Override
@@ -59,7 +59,7 @@ public class Copier extends SwingWorker<Void,Void> {
                     fc_out = fos.getChannel();
                     fc_in.transferTo(0, fc_in.size(), fc_out);
                     fc_out.close();
-                    fc_in.close();
+                    fc_in.close(); 
                     fos.close();
                     fis.close();                        
                     for (int j = 0; j < 5 ; j++) {
@@ -73,7 +73,7 @@ public class Copier extends SwingWorker<Void,Void> {
                     current_count++;
                     // System.out.format("Copied (%d of %d) : %s --> %s\n", 
                     //         current_count, copy_count, file1.getAbsolutePath(), file2.getAbsolutePath());
-                    parentApp.setMessage(String.format("Copied (%d of %d): %s --> %s", 
+                    companion.setMessage(String.format("Copied (%d of %d): %s --> %s", 
                             current_count, copy_count, file1.getAbsolutePath(), file2.getAbsolutePath()));             
 
                 } catch (NullPointerException ex) {
@@ -89,13 +89,13 @@ public class Copier extends SwingWorker<Void,Void> {
                 } 
             }
         }
-        parentApp.setMessage(String.format(" Copy completed : total %d files.", current_count));
+        companion.setMessage(String.format("Copy completed : total %d files.", current_count));
 
         // InfoTable Update
         String[] columnNames = {"Select", "File Name", "Size(KB)", "Modified", "Hash Code", "Verify"};        
         model = new MyTableModel(data1, columnNames);
-        parentApp.setInfoTable(model);
-        parentApp.setInfoDataAndHeader(data1, columnNames);
+        companion.setInfoTable(model);
+        companion.setInfoDataAndHeader(data1, columnNames);
         return null;
     }
     /**
@@ -103,7 +103,7 @@ public class Copier extends SwingWorker<Void,Void> {
      */
     @Override
     public void done() {
-        parentApp.setCursor(null);
-        parentApp.setStage(Stage.COPY_COMPLETED);
+        companion.setCursor(null);
+        companion.setStage(Stage.COPY_COMPLETED);
     }
 }

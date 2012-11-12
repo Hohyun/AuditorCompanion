@@ -10,6 +10,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,9 +45,9 @@ public final class AuditCompanion extends javax.swing.JFrame
     private JPanel mainPanel;
     private JPanel statusPanel;
     private JLabel statusLabel;
-    private JButton buttonMakeNew;
+    private JButton buttonNew;
     private JButton buttonAnalyze;
-    private JButton buttonLoadCase;
+    private JButton buttonOpen;
     private JButton buttonCopy;
     private JButton buttonIndex;
     private JButton buttonSearch;
@@ -76,24 +77,24 @@ public final class AuditCompanion extends javax.swing.JFrame
     private JLabel lblCase;
     private JTable infoTable;
     private MyTableData infoData;
-    private String targetDir;
-    private String targetFileDir;
-    private String targetIndexDir;
+    private String caseDir;
+    private String fileDir;
+    private String indexDir;
     private String caseName = "";
     private File fileListFile;
     private File caseInfoFile;
     private String auditor = "";  
     private DocLang docLang = DocLang.English;
-    private Analyzer analyzer;
-    private Copier copier;
-    private Indexer indexer;
+//    private Analyzer analyzer;
+//    private Copier copier;
+//    private Indexer indexer;
     private List<String> jobDirs = new ArrayList<String>();
     private List<String> jobFileTypes = new ArrayList<String>();
     private Stage stage;
     private JLabel lblStage;
 
     public static enum DocLang {
-        English, Korean, Japanease
+        English, Korean, Japanese
     }
     public static enum Stage {
         BEFORE_STARTED, CASE_CREATED, ANALYZE_COMPLETED,
@@ -149,7 +150,7 @@ public final class AuditCompanion extends javax.swing.JFrame
         JPanel midPanel = new JPanel(new BorderLayout());
         JPanel bottomPanel = new JPanel(new FlowLayout());  
         // top   
-        lblCase = new JLabel("[ Case : Unknown ]");
+        lblCase = new JLabel("");
         lblCase.setFont(new Font("맑은 고딕",Font.BOLD,20));
         topPanel.add(lblCase, BorderLayout.CENTER);
         // middle
@@ -159,12 +160,18 @@ public final class AuditCompanion extends javax.swing.JFrame
         JScrollPane scrollPane = new JScrollPane(infoTable);
         midPanel.add(scrollPane, BorderLayout.CENTER);
         // bottom
-        buttonMakeNew = new JButton("Create Case");
-        buttonMakeNew.addActionListener(new java.awt.event.ActionListener() {
+        buttonNew = new JButton("New");
+        buttonNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonMakeNewActionPerformed(evt);
+                buttonNewActionPerformed(evt);
             }
         });
+        buttonOpen = new JButton("Open");
+        buttonOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonOpenActionPerformed(evt);
+            }
+        });        
         buttonAnalyze = new JButton("Analyze");
         buttonAnalyze.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -177,31 +184,30 @@ public final class AuditCompanion extends javax.swing.JFrame
                 buttonCopyActionPerformed(evt);
             }
         });        
-        buttonLoadCase = new JButton("Load Case");
-        buttonLoadCase.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonLoadCaseActionPerformed(evt);
-            }
-        });
         buttonIndex = new JButton("Index");
         buttonIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonIndexActionPerformed(evt);
             }
         });
-        buttonSearch = new JButton("Search");
-        buttonReset = new JButton("Reset Case");
+//        buttonSearch = new JButton("Search");
+//        buttonSearch.addActionListener(new java.awt.event.ActionListener() {
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                buttonSearchActionPerformed(evt);
+//            }
+//        });        
+        buttonReset = new JButton("Reset");
         buttonReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonResetActionPerformed(evt);
             }
         });
-        bottomPanel.add(buttonMakeNew);
+        bottomPanel.add(buttonNew);
+        bottomPanel.add(buttonOpen);
         bottomPanel.add(buttonAnalyze);
         bottomPanel.add(buttonCopy);
-        bottomPanel.add(buttonLoadCase);
         bottomPanel.add(buttonIndex);
-        bottomPanel.add(buttonSearch);
+//        bottomPanel.add(buttonSearch);
         bottomPanel.add(buttonReset);    
         mainPanel.add(topPanel, BorderLayout.PAGE_START);
         mainPanel.add(midPanel, BorderLayout.CENTER);
@@ -504,10 +510,12 @@ public final class AuditCompanion extends javax.swing.JFrame
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
 
-    public void buttonMakeNewActionPerformed(ActionEvent evt) {
+    public void buttonNewActionPerformed(ActionEvent evt) {
         register = new Register(this, true);
+        register.setLocation((this.getWidth()-register.getWidth())/2, 
+                (this.getHeight()-register.getHeight())/2);
         register.setVisible(true);
-        if (caseName.equals("") || auditor.equals("") || targetDir.equals("")) {
+        if (caseName.equals("") || auditor.equals("") || caseDir.equals("")) {
             // setMessage(" Case was not created. Case Name, Auditor and Target Directory information should be supplied");
         } else {
             setStage(Stage.CASE_CREATED);
@@ -521,63 +529,87 @@ public final class AuditCompanion extends javax.swing.JFrame
     public void buttonCopyActionPerformed(ActionEvent evt) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         MyTableModel model = (MyTableModel) infoTable.getModel();
-        copier = new Copier(model, this);
+        Copier copier = new Copier(model, this);
         copier.addPropertyChangeListener(this);
         copier.execute();
     }
     
    public void buttonIndexActionPerformed(ActionEvent evt) {
-        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        indexer = new Indexer(targetIndexDir, targetFileDir, docLang, this);
-        //indexer.makeIndex();
-        //setCursor(null);
-        //setStage(Stage.INDEX_CREATED);
-        indexer.addPropertyChangeListener(this);
-        indexer.execute();
+       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+       if (stage == Stage.COPY_COMPLETED) {
+           Indexer indexer = new Indexer(indexDir, fileDir, docLang, this);
+           //indexer.addPropertyChangeListener(this);
+           indexer.execute();
+       } else if (stage == Stage.ANALYZE_COMPLETED || stage == Stage.CASE_LOADED) {
+           MyTableModel model = (MyTableModel) infoTable.getModel();
+           IndexerB indexerB = new IndexerB(indexDir, model, docLang, this);
+           //indexerB.addPropertyChangeListener(this);
+           indexerB.execute();           
+       }
     }
    
     public void buttonAnalyzeActionPerformed(ActionEvent evt) {
         if (caseName.equals("")) {
-            Toolkit.getDefaultToolkit().beep();
-            setMessage("Please do \"Case Create\" before analyzing!");
+            JOptionPane.showMessageDialog(null, "Please create \"New case\" before analyzing! ", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (jobDirs.isEmpty() || jobFileTypes.isEmpty() ) {
             setMessage("Please select [Source Directories] and [File Types].");
+            JOptionPane.showMessageDialog(null, "Please select [Source Directories] and [File Types].", 
+                    "Error", JOptionPane.ERROR_MESSAGE);            
             return;
         }
         //progressBar.setStringPainted(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        analyzer = new Analyzer(jobDirs, jobFileTypes, targetDir, fileListFile, this);   
+        Analyzer analyzer = new Analyzer(jobDirs, jobFileTypes, caseDir, fileListFile, this);   
         analyzer.setParent(this);
         analyzer.addPropertyChangeListener(this);
         analyzer.execute();
     }
     
-    public void buttonLoadCaseActionPerformed(ActionEvent evt) {
+    public void buttonOpenActionPerformed(ActionEvent evt) {
         //throw new UnsupportedOperationException("Not yet implemented");
         JFileChooser chooser = new JFileChooser();
         
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "Compliance Audit File", "txt");
+            "Companion information file", "info");
          chooser.setFileFilter(filter);
 
-        // chooser.setCurrentDirectory(new File(targetDir)); 
-        // 나중에 수정할 것
         chooser.setCurrentDirectory(new File("C:\\"));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
             try {
-                //setInfoTableWithVerify(chooser.getSelectedFile().getAbsolutePath());
+                //setInfoTableWithVerify(chooser.getSelectedFile().getAbsolutePath());    
                 File file = chooser.getSelectedFile();
-                setTargetDir(file.getParent());
-                setInfoTable(file);
+                setCaseDir(file.getParent());
+                setFileDir(file.getParent() + "\\Files");
+                setIndexDir(file.getParent() + "\\Index");
                 
-                String fn = file.getName();
-                String s1 = fn.split("\\.")[0];
-                setAuditor(s1.substring(s1.indexOf("[")+1, s1.indexOf("]")));
-                setCaseName(s1.substring(s1.indexOf("]")+1));
-                setCaseLabel(String.format("[ %s ] %s", auditor, caseName));
-                setFileListFile(file);
+                String line;
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                while ((line = br.readLine()) != null) {
+                    String value = line.substring(line.indexOf(":")+1).trim();
+                    if (line.startsWith("Case")) {
+                        setCaseName(value);
+                        setCaseLabel(value);
+                    } else if (line.startsWith("Language")) {
+                        switch (value) {
+                            case "English":
+                                setDocLang(DocLang.English);
+                                break;
+                            case "Korean":
+                                setDocLang(DocLang.Korean);
+                                break;
+                            case "Japanese":
+                                setDocLang(DocLang.Japanese);
+                                break;
+                        }
+                    } else if (line.startsWith("File List")) {
+                        File f = new File(file.getParent(), value);
+                        setInfoTable(f);
+                        setFileListFile(f);
+                    }
+                }      
             } catch (IOException ex) {
                 System.out.println(ex);
             }
@@ -592,9 +624,9 @@ public final class AuditCompanion extends javax.swing.JFrame
     @Override
     public void actionPerformed(ActionEvent ae) {
         if("New".equals(ae.getActionCommand())) {
-             buttonMakeNewActionPerformed(ae);
+             buttonNewActionPerformed(ae);
         } else if("Open".equals(ae.getActionCommand())) {
-             buttonLoadCaseActionPerformed(ae);
+             buttonOpenActionPerformed(ae);
         } else if("Reset".equals(ae.getActionCommand())) {
              buttonResetActionPerformed(ae);
         } else if("Exit".equals(ae.getActionCommand())) {
@@ -606,7 +638,7 @@ public final class AuditCompanion extends javax.swing.JFrame
         } else if("Index".equals(ae.getActionCommand())) {
             buttonIndexActionPerformed(ae);
         } else if("Search".equals(ae.getActionCommand())) {
-            JOptionPane.showMessageDialog(this,"Search function is under construction!");
+            buttonSearchActionPerformed(ae);
         } else if("Keyword".equals(ae.getActionCommand())) {
             JOptionPane.showMessageDialog(this,"Keyword management function is under construction!");
         } else if("About".equals(ae.getActionCommand())) {
@@ -615,19 +647,57 @@ public final class AuditCompanion extends javax.swing.JFrame
         }
     }
      
+    public void buttonSearchActionPerformed(ActionEvent evt) {
+        // Get index directory with information file.
+        JFileChooser chooser = new JFileChooser();      
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+            "Companion information file", "info");
+        chooser.setFileFilter(filter);
+        chooser.setCurrentDirectory(new File("C:\\"));        
+   
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) { 
+            try { 
+                File file = chooser.getSelectedFile();
+                setCaseDir(file.getParent());
+                setFileDir(file.getParent() + "\\Files");
+                setIndexDir(file.getParent() + "\\Index");
+                
+                String line;
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                while ((line = br.readLine()) != null) {
+                    String value = line.substring(line.indexOf(":")+1).trim();
+                    if (line.startsWith("Language")) {
+                        switch (value) {
+                            case "English":
+                                setDocLang(DocLang.English);
+                                break;
+                            case "Korean":
+                                setDocLang(DocLang.Korean);
+                                break;
+                            case "Japanese":
+                                setDocLang(DocLang.Japanese);
+                                break;
+                        }
+                    }
+                }      
+                // Open Searcher
+                Searcher searcher = new Searcher(indexDir, docLang);
+                searcher.initResultTable();
+            } catch (IOException ex) {
+                System.out.println(ex);
+            }
+        }
+        this.setState(Frame.ICONIFIED);
+    }
+    
     public void buttonResetActionPerformed(ActionEvent evt) {
         setStage(Stage.BEFORE_STARTED);
-      //  try {
-            //setInfoTable("");
         Object[][] data = {};
         String[] columnNames = {};
         infoTable.setModel(new MyTableModel(data,columnNames));
         setAuditor("");
         setCaseName("");
-        setCaseLabel("[ Case : Unknown ]");
-       // } catch (IOException e) {
-         //   System.err.println(e.getMessage());
-       // }
+        //setCaseLabel("[ Case : Unknown ]");
     }
             
     public void setCaseLabel(String caseName) {
@@ -638,33 +708,28 @@ public final class AuditCompanion extends javax.swing.JFrame
        return lblCase.getText();
     }
     
-    public void setTargetDir(String dir) {
-        targetDir = dir;
-        targetIndexDir = targetDir + "\\Index";
-        targetFileDir = targetDir + "\\Files";
-       // File f = new File(targetFileDir.replace("\\","\\\\"));
-        File f = new File(targetFileDir);
-        if (!f.exists()) {
-            boolean isFileDirCreated = f.mkdir();     
-            targetIndexDir = targetDir + "\\Index";
-            if (!isFileDirCreated) {
-                setMessage(String.format(" Error: couldn't create %s\\Files and %s\\index", 
-                    targetDir, targetDir));
-            }
-        }
-        System.out.println(targetDir + ":" + targetIndexDir + ":" + targetFileDir);
+    public void setCaseDir(String dir) {
+        caseDir = dir;
     }   
     
-    public String getTargetDir() {
-        return targetDir;
+    public String getCaseDir() {
+        return caseDir;
     }
     
-    public String getTargetFileDir() {
-        return targetFileDir;
+    public void setFileDir(String dir) {
+        fileDir = dir;
     }
     
-    public String getTargetIndexDir() {
-        return targetIndexDir;
+    public String getFileDir() {
+        return fileDir;
+    }
+    
+    public void setIndexDir(String dir) {
+        indexDir = dir;
+    }
+    
+    public String getIndexDir() {
+        return indexDir;
     }
     
     public void setAuditor(String name) {
@@ -710,27 +775,27 @@ public final class AuditCompanion extends javax.swing.JFrame
     
     public void setStage(Stage stage) {
         this.stage = stage;
-        lblStage.setText(stage.toString());
+        lblStage.setText(stage.toString() + " ");
         
         switch (stage) {
-            // make case, analyze, copy, load case, index, search, reset
+            // new case, load case, analyze, copy, index, reset
             case BEFORE_STARTED:
-                enableButtons(true, false, false, true, false, false, false);
+                enableButtons(true, true, false, false, false, false);
                 break;
             case CASE_CREATED:
-                enableButtons(false, true, false, false, false, false, true);
-                break;
-            case ANALYZE_COMPLETED:
-                enableButtons(false, false, true, false, false, false, true);
-                break;
-            case COPY_COMPLETED:
-                enableButtons(false, false, false, false, true, false, true);
+                enableButtons(false, false, true, false, false, true);
                 break;
             case CASE_LOADED:
-                enableButtons(false, false, true, false, true, false, true);
+                enableButtons(false, false, false, true, true, true);
+                break;                
+            case ANALYZE_COMPLETED:
+                enableButtons(false, false, false, true, true, true);
+                break;
+            case COPY_COMPLETED:
+                enableButtons(false, false, false, false, true, true);
                 break;
             case INDEX_CREATED:
-                enableButtons(true, false, false, false, false, true, true);
+                enableButtons(false, false, false, false, false, true);
                 break;
         }
     }
@@ -789,38 +854,34 @@ public final class AuditCompanion extends javax.swing.JFrame
     }
     
     public void enableButtons(boolean b1, boolean b2, boolean b3, boolean b4,
-            boolean b5, boolean b6, boolean b7) {       
+            boolean b5, boolean b6) {       
         if (b1 == true) { 
-            buttonMakeNew.setEnabled(true);
+            buttonNew.setEnabled(true);
         } else { 
-            buttonMakeNew.setEnabled(false); 
+            buttonNew.setEnabled(false); 
         }
         if (b2 == true) { 
+            buttonOpen.setEnabled(true);
+        } else { 
+            buttonOpen.setEnabled(false); 
+        }               
+        if (b3 == true) { 
             buttonAnalyze.setEnabled(true);
         } else { 
             buttonAnalyze.setEnabled(false); 
         }
-        if (b3 == true) { 
+        if (b4 == true) { 
             buttonCopy.setEnabled(true);
         } else { 
             buttonCopy.setEnabled(false); 
         }
-         if (b4 == true) { 
-            buttonLoadCase.setEnabled(true);
-        } else { 
-            buttonLoadCase.setEnabled(false); 
-        }       
+ 
         if (b5 == true) { 
             buttonIndex.setEnabled(true);
         } else { 
             buttonIndex.setEnabled(false); 
         }         
         if (b6 == true) { 
-            buttonSearch.setEnabled(true);
-        } else { 
-            buttonSearch.setEnabled(false); 
-        }    
-        if (b7 == true) { 
             buttonReset.setEnabled(true);
         } else { 
             buttonReset.setEnabled(false); 
@@ -828,6 +889,6 @@ public final class AuditCompanion extends javax.swing.JFrame
     }
  
     public void setMessage(String msg) {
-        statusLabel.setText(msg);
+        statusLabel.setText(" " + msg);
     }
 }
