@@ -4,17 +4,15 @@
  */
 package compliance;
 
-import compliance.AuditCompanion.DocLang;
+import compliance.Collector.DocLang;
 import java.awt.Desktop;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
 import org.apache.lucene.analysis.kr.KoreanAnalyzer;
@@ -39,6 +37,7 @@ public class Searcher extends javax.swing.JFrame {
     private String queryString;
     private String indexDir;
     private Page page;
+    private int pageSize = 10;
     private MyTableModel model;
     private IndexReader reader;
     private IndexSearcher searcher;
@@ -49,6 +48,13 @@ public class Searcher extends javax.swing.JFrame {
     /**
      * Creates new form Searcher
      */
+    public Searcher() throws IOException {
+        initComponents();
+        setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        hSplitPane.setDividerLocation(450);
+        setVisible(true);
+    }
+    
     public Searcher(String indexDir, DocLang docLang) throws IOException {
         this.indexDir = indexDir;
         initComponents();
@@ -72,12 +78,26 @@ public class Searcher extends javax.swing.JFrame {
         }        
         // Page initialize
         page = new Page(1);
-        page.setPageSize(5);
-        //this.setIconImage(new ImageIcon("D:\\Software\\Icons\\audits.jpg").getImage());
-        setNavigateButtonsDisable(); 
+        page.setPageSize(pageSize);
         setVisible(true);
     }
 
+    public void initSearcher() {
+        try {
+            reader = IndexReader.open(FSDirectory.open(new File(this.indexDir)));
+            searcher = new IndexSearcher(reader); 
+        } catch (IOException e) {
+            System.out.println(e);
+        }       
+        // Page initialize
+        page = new Page(1);
+        page.setPageSize(pageSize);
+        //this.setIconImage(new ImageIcon("D:\\Software\\Icons\\audits.jpg").getImage());
+        setNavigateButtonsDisable();  
+        this.searchBotton.setEnabled(true);
+        this.resetButton.setEnabled(true);
+        resultTableColumnWidthAdjust();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -93,20 +113,20 @@ public class Searcher extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         searchWords = new javax.swing.JTextArea();
         searchBotton = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        indexInfoLabel = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        resetButton = new javax.swing.JButton();
         midP = new javax.swing.JPanel();
         hSplitPane = new javax.swing.JSplitPane();
         midLeftPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        resultTable = new javax.swing.JTable();
         midLeftBottomP = new javax.swing.JPanel();
         firstButton = new javax.swing.JButton();
         beforeButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         lastButton = new javax.swing.JButton();
         pageText = new javax.swing.JTextField();
-        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        resultTable = new javax.swing.JTable();
         pageLabel = new javax.swing.JLabel();
         tabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -116,15 +136,16 @@ public class Searcher extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        openMenuitem = new javax.swing.JMenuItem();
+        exitMenuItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem3 = new javax.swing.JMenuItem();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem5 = new javax.swing.JMenuItem();
+        loadMenuItem = new javax.swing.JMenuItem();
+        clearMenuItem = new javax.swing.JMenuItem();
+        saveAsMenuItem = new javax.swing.JMenuItem();
+        deleteMenuitem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        jMenuItem6 = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
+        howToUseMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Searcher");
@@ -138,10 +159,10 @@ public class Searcher extends javax.swing.JFrame {
 
         mainPanel.setLayout(new java.awt.BorderLayout());
 
-        upperP.setBackground(new java.awt.Color(0, 153, 153));
+        upperP.setBackground(new java.awt.Color(204, 204, 204));
+        upperP.setForeground(new java.awt.Color(255, 102, 102));
 
         jLabel2.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("▶ 검색어");
 
         searchWords.setColumns(20);
@@ -149,25 +170,34 @@ public class Searcher extends javax.swing.JFrame {
         searchWords.setRows(5);
         jScrollPane2.setViewportView(searchWords);
 
-        searchBotton.setBackground(new java.awt.Color(0, 153, 153));
+        searchBotton.setBackground(new java.awt.Color(204, 204, 204));
         searchBotton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        searchBotton.setText("Go");
+        searchBotton.setText("Search");
+        searchBotton.setEnabled(false);
         searchBotton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchBottonActionPerformed(evt);
             }
         });
 
-        jLabel3.setBackground(new java.awt.Color(204, 204, 204));
-        jLabel3.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 0));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel3.setText("F:/현장점검/Index (Korean Analyzer)");
+        indexInfoLabel.setBackground(new java.awt.Color(204, 204, 204));
+        indexInfoLabel.setForeground(new java.awt.Color(51, 153, 0));
+        indexInfoLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
 
         jLabel4.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 0));
+        jLabel4.setForeground(new java.awt.Color(0, 153, 0));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel4.setText("(예) 합의 회의 가격 인상 저지 +OZ -SELBI");
+        jLabel4.setText("(예) 합의 회의 가격 인상 저지 +필수단어 -제외단어");
+
+        resetButton.setBackground(new java.awt.Color(204, 204, 204));
+        resetButton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
+        resetButton.setText("Reset");
+        resetButton.setEnabled(false);
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout upperPLayout = new javax.swing.GroupLayout(upperP);
         upperP.setLayout(upperPLayout);
@@ -180,11 +210,13 @@ public class Searcher extends javax.swing.JFrame {
                     .addGroup(upperPLayout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(searchBotton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(searchBotton, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 464, Short.MAX_VALUE)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(resetButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 167, Short.MAX_VALUE)
+                        .addComponent(indexInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         upperPLayout.setVerticalGroup(
@@ -194,45 +226,28 @@ public class Searcher extends javax.swing.JFrame {
                 .addGroup(upperPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(searchBotton)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(jLabel4)
+                    .addComponent(resetButton)
+                    .addComponent(indexInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
         );
 
         mainPanel.add(upperP, java.awt.BorderLayout.PAGE_START);
 
-        midP.setBackground(new java.awt.Color(0, 153, 153));
+        midP.setBackground(new java.awt.Color(204, 204, 204));
+        midP.setPreferredSize(new java.awt.Dimension(1209, 600));
 
+        hSplitPane.setBackground(new java.awt.Color(0, 153, 204));
         hSplitPane.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         hSplitPane.setDividerLocation(450);
 
-        midLeftPanel.setLayout(new java.awt.BorderLayout());
-
-        resultTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        resultTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        resultTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                resultTableMouseClicked(evt);
-            }
-        });
-        jScrollPane1.setViewportView(resultTable);
-
-        midLeftPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+        midLeftBottomP.setBackground(new java.awt.Color(204, 204, 204));
 
         firstButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first.jpg"))); // NOI18N
         firstButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 0)));
-        firstButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first.jpg"))); // NOI18N
+        firstButton.setEnabled(false);
+        firstButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first1.jpg"))); // NOI18N
         firstButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 firstButtonActionPerformed(evt);
@@ -241,9 +256,10 @@ public class Searcher extends javax.swing.JFrame {
 
         beforeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back.jpg"))); // NOI18N
         beforeButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51)));
+        beforeButton.setEnabled(false);
         beforeButton.setMaximumSize(new java.awt.Dimension(77, 57));
         beforeButton.setMinimumSize(new java.awt.Dimension(77, 57));
-        beforeButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back.jpg"))); // NOI18N
+        beforeButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back1.jpg"))); // NOI18N
         beforeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 beforeButtonActionPerformed(evt);
@@ -252,7 +268,8 @@ public class Searcher extends javax.swing.JFrame {
 
         nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward.jpg"))); // NOI18N
         nextButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51)));
-        nextButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward.jpg"))); // NOI18N
+        nextButton.setEnabled(false);
+        nextButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward1.jpg"))); // NOI18N
         nextButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nextButtonActionPerformed(evt);
@@ -261,7 +278,8 @@ public class Searcher extends javax.swing.JFrame {
 
         lastButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last.jpg"))); // NOI18N
         lastButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 0)));
-        lastButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last.jpg"))); // NOI18N
+        lastButton.setEnabled(false);
+        lastButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last1.jpg"))); // NOI18N
         lastButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lastButtonActionPerformed(evt);
@@ -270,6 +288,7 @@ public class Searcher extends javax.swing.JFrame {
 
         pageText.setFont(new java.awt.Font("맑은 고딕", 1, 14)); // NOI18N
         pageText.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        pageText.setEnabled(false);
         pageText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pageTextActionPerformed(evt);
@@ -291,7 +310,7 @@ public class Searcher extends javax.swing.JFrame {
                 .addComponent(lastButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pageText, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(229, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         midLeftBottomPLayout.setVerticalGroup(
             midLeftBottomPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -306,32 +325,71 @@ public class Searcher extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        midLeftPanel.add(midLeftBottomP, java.awt.BorderLayout.PAGE_END);
+        resultTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
+            },
+            new String [] {
+                "SQ", "Path", "File Name"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        resultTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        resultTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        resultTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                resultTableMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(resultTable);
+
+        pageLabel.setBackground(new java.awt.Color(255, 153, 255));
         pageLabel.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
         pageLabel.setText("Page:");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout midLeftPanelLayout = new javax.swing.GroupLayout(midLeftPanel);
+        midLeftPanel.setLayout(midLeftPanelLayout);
+        midLeftPanelLayout.setHorizontalGroup(
+            midLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(midLeftPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
+                .addGroup(midLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pageLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(midLeftPanelLayout.createSequentialGroup()
+                        .addComponent(midLeftBottomP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        midLeftPanelLayout.setVerticalGroup(
+            midLeftPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(midLeftPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pageLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(pageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(midLeftBottomP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
-
-        midLeftPanel.add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
         hSplitPane.setLeftComponent(midLeftPanel);
 
+        tabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
         tabbedPane1.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
 
         contentsArea.setContentType("text/html"); // NOI18N
@@ -345,7 +403,9 @@ public class Searcher extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 547, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         tabbedPane1.addTab("Contents", jPanel1);
@@ -358,7 +418,7 @@ public class Searcher extends javax.swing.JFrame {
             midPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(midPLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(hSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 1185, Short.MAX_VALUE)
+                .addComponent(hSplitPane)
                 .addContainerGap())
         );
         midPLayout.setVerticalGroup(
@@ -366,7 +426,7 @@ public class Searcher extends javax.swing.JFrame {
             .addGroup(midPLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(hSplitPane)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
         mainPanel.add(midP, java.awt.BorderLayout.CENTER);
@@ -375,7 +435,7 @@ public class Searcher extends javax.swing.JFrame {
         bottomP.setLayout(new java.awt.BorderLayout());
 
         jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 12)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setForeground(new java.awt.Color(0, 51, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Powered by Lucene");
         bottomP.add(jLabel1, java.awt.BorderLayout.CENTER);
@@ -386,40 +446,65 @@ public class Searcher extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Open");
-        jMenu1.add(jMenuItem1);
+        openMenuitem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openMenuitem.setText("Open Index");
+        openMenuitem.setActionCommand("Open Index");
+        openMenuitem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openMenuitemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(openMenuitem);
 
-        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem2.setText("Exit");
-        jMenu1.add(jMenuItem2);
+        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        exitMenuItem.setText("Exit");
+        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu1.add(exitMenuItem);
 
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Keyword");
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem3.setText("Select");
-        jMenu2.add(jMenuItem3);
+        loadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
+        loadMenuItem.setText("Load");
+        jMenu2.add(loadMenuItem);
 
-        jMenuItem4.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem4.setText("Add");
-        jMenu2.add(jMenuItem4);
+        clearMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        clearMenuItem.setText("Clear");
+        clearMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(clearMenuItem);
 
-        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem5.setText("Delete");
-        jMenu2.add(jMenuItem5);
+        saveAsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
+        saveAsMenuItem.setText("Save As");
+        jMenu2.add(saveAsMenuItem);
+
+        deleteMenuitem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        deleteMenuitem.setText("Delete");
+        jMenu2.add(deleteMenuitem);
 
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Help");
 
-        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem6.setText("How to use");
-        jMenu3.add(jMenuItem6);
+        howToUseMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
+        howToUseMenuItem.setText("How to use");
+        jMenu3.add(howToUseMenuItem);
 
-        jMenuItem7.setText("About");
-        jMenu3.add(jMenuItem7);
+        aboutMenuItem.setText("About");
+        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutMenuItemActionPerformed(evt);
+            }
+        });
+        jMenu3.add(aboutMenuItem);
 
         jMenuBar1.add(jMenu3);
 
@@ -443,6 +528,83 @@ public class Searcher extends javax.swing.JFrame {
         // TODO add your handling code here:
         
     }//GEN-LAST:event_formWindowClosed
+
+    private void clearMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearMenuItemActionPerformed
+        // TODO add your handling code here:
+        resetButtonActionPerformed(evt);
+    }//GEN-LAST:event_clearMenuItemActionPerformed
+
+    private void openMenuitemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuitemActionPerformed
+        // TODO add your handling code here:
+        IndexOpenDialog dlg = new IndexOpenDialog(this, true);
+        dlg.setLocation((this.getWidth()-dlg.getWidth())/2, 
+                (this.getHeight()-dlg.getHeight())/2);
+        dlg.setVisible(true);
+    }//GEN-LAST:event_openMenuitemActionPerformed
+
+    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_exitMenuItemActionPerformed
+
+    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(this, "Field Audtor's Companion for Korean Air\n"
+                + "- Searcher\n"
+                + "- Developed by H.H.Kim (SELBI)\n- Ver 1.0 (2012.11)");
+    }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+        // TODO add your handling code here:
+        searchWords.setText("");
+        contentsArea.setText("");
+        pageText.setText("");
+        initResultTable();
+        setNavigateButtonsDisable();
+    }//GEN-LAST:event_resetButtonActionPerformed
+
+    private void resultTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resultTableMouseClicked
+        int row = resultTable.getSelectedRow();
+        int id = (int) model.getValueAt(row, 0);
+        if (evt.getClickCount() == 1) {
+            // contents display
+            ScoreDoc scoreDoc = topDocs.scoreDocs[id - 1];
+            Document d;
+            try {
+                d = searcher.doc(scoreDoc.doc);
+                String contents = d.get("contents");
+                String[] fragments = MyUtil.getFragmentsWithHighlightedTerms(analyzer, query, "contents", contents, 100, 100);
+                String highlighted = "";
+                for (String frag : fragments) {
+                    highlighted += frag;
+                }
+                contentsArea.setText(highlighted.replaceAll("\n", "<br/>"));
+            } catch (CorruptIndexException ex) {
+                System.out.println(ex);
+            } catch (IOException ex) {
+                System.out.println(ex);
+            }
+            contentsArea.setCaretPosition(0);
+        } else if (evt.getClickCount() == 2) {
+            // Open external program
+            String path = (String) model.getValueAt(row, 1);
+            File file;
+            try {
+                if (path.equals("..\\Files")) {
+                    String docDir = indexDir.replace("Index", "Files");
+                    String fn = (String) model.getValueAt(row, 2);
+                    file = new File(docDir, fn);
+                } else {
+                    String fn = (String) model.getValueAt(row, 2);
+                    file = new File(path, fn);
+                }
+                Desktop.getDesktop().open(file);
+            } catch (IOException ex) {
+                System.out.println(ex);
+                return;
+            }
+        }
+    }//GEN-LAST:event_resultTableMouseClicked
 
     private void pageTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pageTextActionPerformed
         int pageNo = page.getCurrentPageNo();
@@ -499,48 +661,6 @@ public class Searcher extends javax.swing.JFrame {
             System.out.println(ex);
         }
     }//GEN-LAST:event_firstButtonActionPerformed
-
-    private void resultTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resultTableMouseClicked
-        int row = resultTable.getSelectedRow();
-        int id = (int) model.getValueAt(row, 0);
-        if (evt.getClickCount() == 1) {
-            // contents display
-            ScoreDoc scoreDoc = topDocs.scoreDocs[id - 1];
-            Document d;
-            try {
-                d = searcher.doc(scoreDoc.doc);
-                String contents = d.get("contents");
-                String[] fragments = MyUtil.getFragmentsWithHighlightedTerms(analyzer, query, "contents", contents, 100, 100);
-                String highlighted = "";
-                for (String frag : fragments) {
-                    highlighted += frag;
-                }
-                contentsArea.setText(highlighted.replaceAll("\n", "<br/>"));
-            } catch (CorruptIndexException ex) {
-                System.out.println(ex);
-            } catch (IOException ex) {
-                System.out.println(ex);
-            }
-            contentsArea.setCaretPosition(0);
-        } else if (evt.getClickCount() == 2) {
-            // Open external program
-            String path = (String) model.getValueAt(row, 1);
-            File file;
-            try {
-                if (path.equals("..\\Files")) {
-                    String docDir = indexDir.replace("Index", "Files");
-                    String fn = (String) model.getValueAt(row, 2);
-                    file = new File(docDir, fn);
-                } else {
-                    String fn = (String) model.getValueAt(row, 2);
-                    file = new File(path, fn);
-                }
-                Desktop.getDesktop().open(file);
-            } catch (IOException ex) {
-                System.out.println(ex);
-            }
-        }
-    }//GEN-LAST:event_resultTableMouseClicked
 
     public void search () throws IOException {
         QueryParser parser = new QueryParser(Version.LUCENE_36, "contents", analyzer);
@@ -625,7 +745,11 @@ public class Searcher extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    Searcher searcher = new Searcher("F:\\Binder\\Index", DocLang.Korean);
+                    //Searcher searcher = new Searcher("F:\\Binder\\Index", DocLang.Korean);
+                    Searcher searcher = new Searcher();
+                    Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
+                            .getResource("/compliance/images/search1.jpg"));
+                    searcher.setIconImage(icon);
                     searcher.initResultTable();
                     searcher.setVisible(true);
                 } catch (IOException ex) {
@@ -635,40 +759,41 @@ public class Searcher extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton beforeButton;
     private javax.swing.JPanel bottomP;
+    private javax.swing.JMenuItem clearMenuItem;
     private javax.swing.JEditorPane contentsArea;
+    private javax.swing.JMenuItem deleteMenuitem;
+    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JButton firstButton;
     private javax.swing.JSplitPane hSplitPane;
+    private javax.swing.JMenuItem howToUseMenuItem;
+    private javax.swing.JLabel indexInfoLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton lastButton;
+    private javax.swing.JMenuItem loadMenuItem;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JPanel midLeftBottomP;
     private javax.swing.JPanel midLeftPanel;
     private javax.swing.JPanel midP;
     private javax.swing.JButton nextButton;
+    private javax.swing.JMenuItem openMenuitem;
     private javax.swing.JLabel pageLabel;
     private javax.swing.JTextField pageText;
+    private javax.swing.JButton resetButton;
     private javax.swing.JTable resultTable;
+    private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JButton searchBotton;
     private javax.swing.JTextArea searchWords;
     private javax.swing.JTabbedPane tabbedPane1;
@@ -682,16 +807,19 @@ public class Searcher extends javax.swing.JFrame {
             beforeButton.setEnabled(false);
             nextButton.setEnabled(true);
             lastButton.setEnabled(true);
+            pageText.setEnabled(true);
         } else if (curPage == page.getPageCount()) { // last page
             firstButton.setEnabled(true);
             beforeButton.setEnabled(true);
             nextButton.setEnabled(false);
             lastButton.setEnabled(false);
+            pageText.setEnabled(true);
         } else {
             firstButton.setEnabled(true);
             beforeButton.setEnabled(true);
             nextButton.setEnabled(true);
             lastButton.setEnabled(true);
+            pageText.setEnabled(true);
         }
     }
     
@@ -700,5 +828,36 @@ public class Searcher extends javax.swing.JFrame {
         beforeButton.setEnabled(false);
         nextButton.setEnabled(false);
         lastButton.setEnabled(false);
+    }
+    
+    public void setIndexDir (String indexDir) {
+        this.indexDir = indexDir;
+    }
+    
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+    
+    public void setAnalyzer (String language) {
+        try {
+            switch (language) {
+                case "Korean":
+                    analyzer = new KoreanAnalyzer(Version.LUCENE_36);
+                    break;
+                case "English":
+                    analyzer = new StandardAnalyzer(Version.LUCENE_36);
+                    break;
+                case "Japanese":
+                    analyzer = new JapaneseAnalyzer(Version.LUCENE_36);
+                    break;
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+            return;
+        }
+    }
+    
+    public void setIndexInfolabel(String info) {
+        this.indexInfoLabel.setText(info);
     }
 }
