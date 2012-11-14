@@ -48,7 +48,7 @@ public class Searcher extends javax.swing.JFrame {
     /**
      * Creates new form Searcher
      */
-    public Searcher() throws IOException {
+    public Searcher() {
         initComponents();
         setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         hSplitPane.setDividerLocation(450);
@@ -132,6 +132,9 @@ public class Searcher extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         contentsArea = new javax.swing.JEditorPane();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        metadataArea = new javax.swing.JEditorPane();
         bottomP = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -223,12 +226,13 @@ public class Searcher extends javax.swing.JFrame {
             upperPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(upperPLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(upperPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(searchBotton)
-                    .addComponent(jLabel4)
-                    .addComponent(resetButton)
-                    .addComponent(indexInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(upperPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(indexInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(upperPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(searchBotton)
+                        .addComponent(jLabel4)
+                        .addComponent(resetButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
         );
@@ -393,6 +397,7 @@ public class Searcher extends javax.swing.JFrame {
         tabbedPane1.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
 
         contentsArea.setContentType("text/html"); // NOI18N
+        contentsArea.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
         jScrollPane3.setViewportView(contentsArea);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -408,9 +413,31 @@ public class Searcher extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        tabbedPane1.addTab("Contents", jPanel1);
+        tabbedPane1.addTab("파일내용", jPanel1);
+
+        metadataArea.setContentType("text/html"); // NOI18N
+        metadataArea.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
+        jScrollPane4.setViewportView(metadataArea);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 724, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 557, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE))
+        );
+
+        tabbedPane1.addTab("추가정보", jPanel2);
 
         hSplitPane.setRightComponent(tabbedPane1);
+        tabbedPane1.getAccessibleContext().setAccessibleName("");
 
         javax.swing.GroupLayout midPLayout = new javax.swing.GroupLayout(midP);
         midP.setLayout(midPLayout);
@@ -448,7 +475,6 @@ public class Searcher extends javax.swing.JFrame {
 
         openMenuitem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         openMenuitem.setText("Open Index");
-        openMenuitem.setActionCommand("Open Index");
         openMenuitem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 openMenuitemActionPerformed(evt);
@@ -579,6 +605,33 @@ public class Searcher extends javax.swing.JFrame {
                     highlighted += frag;
                 }
                 contentsArea.setText(highlighted.replaceAll("\n", "<br/>"));
+                // Metadata
+                String metaString = "";
+                String appName = d.get("application-name");
+                String fileSize = d.get("file-size");
+                String pageCount = d.get("page-count");
+                String md5origin = d.get("md5");
+                File currentFile = new File(new File(indexDir, d.get("path")), 
+                        d.get("file-name"));
+                String md5current = MyUtil.getHashCode(currentFile);
+                  
+                String author = d.get("author");
+                String creationDate = d.get("creation-date");
+                String lastAuthor = d.get("last-author");
+                String lastModified = d.get("last-modified");
+                metaString = String.format("- 작성 프로그램 : %s<br/>"
+                        + "- 파일 크기: %,d bytes<br/>- Page 수: %s<br/><br/>",
+                        appName, Long.parseLong(fileSize), pageCount);
+                metaString += String.format("- 원본 파일 MD5 해시값: %s<br/>- 현재 파일 MD5 해시값: %s<br/>",
+                        md5origin, md5current);
+                if (MyUtil.verifyHash(currentFile.getAbsolutePath(), md5origin)) {
+                    metaString += "- 변동여부 검증: <b>OK! 원본과 일치</b><br/><br/>";
+                } else {
+                    metaString += "- 변동여부 검증: <b>FAIL! 원본과 다름</b><br/><br/>";
+                }
+                metaString += String.format("- 파일 작성자: %s<br/>- 최종 수정자: %s<br/>- 파일 생성일: %s<br/>- 최종 수정일: %s", 
+                        author, lastAuthor, creationDate, lastModified);
+                metadataArea.setText(metaString);
             } catch (CorruptIndexException ex) {
                 System.out.println(ex);
             } catch (IOException ex) {
@@ -687,11 +740,11 @@ public class Searcher extends javax.swing.JFrame {
         for (int i = page.getStart(); i < page.getEnd(); i++) {
             ScoreDoc scoreDoc = topDocs.scoreDocs[i];
             Document d = searcher.doc(scoreDoc.doc);
-            System.out.format(" %3d. (%.5f) %s\n", i + 1, scoreDoc.score, d.get("filename"));
+            System.out.format(" %3d. (%.5f) %s\n", i + 1, scoreDoc.score, d.get("file-name"));
             //contents.append(String.format(" %3d. (%.5f) %s\n", i + 1, scoreDoc.score, d.get("filename")));
             data[i-page.getStart()][0] = i+1;
             data[i-page.getStart()][1] = d.get("path");
-            data[i-page.getStart()][2] = d.get("filename");
+            data[i-page.getStart()][2] = d.get("file-name");
         }
         pageLabel.setText(String.format("Page: %d/%d, (Total Hits: %d)", 
                 page.getCurrentPageNo(), page.getPageCount(), page.getTotalCount()));
@@ -744,7 +797,7 @@ public class Searcher extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
+               // try {
                     //Searcher searcher = new Searcher("F:\\Binder\\Index", DocLang.Korean);
                     Searcher searcher = new Searcher();
                     Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
@@ -752,9 +805,9 @@ public class Searcher extends javax.swing.JFrame {
                     searcher.setIconImage(icon);
                     searcher.initResultTable();
                     searcher.setVisible(true);
-                } catch (IOException ex) {
-                    System.out.println(ex);
-                }
+               // } catch (IOException ex) {
+               //     System.out.println(ex);
+               // }
             }
         });
     }
@@ -778,12 +831,15 @@ public class Searcher extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JButton lastButton;
     private javax.swing.JMenuItem loadMenuItem;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JEditorPane metadataArea;
     private javax.swing.JPanel midLeftBottomP;
     private javax.swing.JPanel midLeftPanel;
     private javax.swing.JPanel midP;
