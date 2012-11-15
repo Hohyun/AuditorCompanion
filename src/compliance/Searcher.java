@@ -5,9 +5,11 @@
 package compliance;
 
 import compliance.Collector.DocLang;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -359,6 +361,24 @@ public class Searcher extends javax.swing.JFrame {
                 resultTableMouseClicked(evt);
             }
         });
+        resultTable.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                resultTableFocusGained(evt);
+            }
+        });
+        resultTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                resultTablePropertyChange(evt);
+            }
+        });
+        resultTable.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                resultTableKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                resultTableKeyReleased(evt);
+            }
+        });
         jScrollPane1.setViewportView(resultTable);
 
         pageLabel.setBackground(new java.awt.Color(255, 153, 255));
@@ -376,7 +396,7 @@ public class Searcher extends javax.swing.JFrame {
                     .addGroup(midLeftPanelLayout.createSequentialGroup()
                         .addComponent(midLeftBottomP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE))
                 .addContainerGap())
         );
         midLeftPanelLayout.setVerticalGroup(
@@ -385,10 +405,10 @@ public class Searcher extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(pageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 491, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(midLeftBottomP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(16, 16, 16))
+                .addContainerGap())
         );
 
         hSplitPane.setLeftComponent(midLeftPanel);
@@ -404,7 +424,7 @@ public class Searcher extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -423,9 +443,9 @@ public class Searcher extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 724, Short.MAX_VALUE)
+            .addGap(0, 726, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 726, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -569,96 +589,114 @@ public class Searcher extends javax.swing.JFrame {
     }//GEN-LAST:event_openMenuitemActionPerformed
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
-        // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
-        // TODO add your handling code here:
         JOptionPane.showMessageDialog(this, "Field Audtor's Companion for Korean Air\n"
                 + "- Searcher\n"
                 + "- Developed by H.H.Kim (SELBI)\n- Ver 1.0 (2012.11)");
     }//GEN-LAST:event_aboutMenuItemActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
-        // TODO add your handling code here:
-        searchWords.setText("");
-        contentsArea.setText("");
-        pageText.setText("");
+        searchWords.setText(null);
+        contentsArea.setText(null);
+        metadataArea.setText(null);
         initResultTable();
+        pageLabel.setText("Page:"); //resultTable 위의 Page표시
+        pageText.setText(""); // navigation 버튼 우측의 Page 입력란
         setNavigateButtonsDisable();
+        searchWords.requestFocus();
     }//GEN-LAST:event_resetButtonActionPerformed
 
     private void resultTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resultTableMouseClicked
         int row = resultTable.getSelectedRow();
-        int id = (int) model.getValueAt(row, 0);
         if (evt.getClickCount() == 1) {
-            // contents display
-            ScoreDoc scoreDoc = topDocs.scoreDocs[id - 1];
-            Document d;
-            try {
-                d = searcher.doc(scoreDoc.doc);
-                String contents = d.get("contents");
-                String[] fragments = MyUtil.getFragmentsWithHighlightedTerms(analyzer, query, "contents", contents, 100, 100);
-                String highlighted = "";
-                for (String frag : fragments) {
-                    highlighted += frag;
-                }
-                contentsArea.setText(highlighted.replaceAll("\n", "<br/>"));
-                // Metadata
-                String metaString = "";
-                String appName = d.get("application-name");
-                String fileSize = d.get("file-size");
-                String pageCount = d.get("page-count");
-                String md5origin = d.get("md5");
-                File currentFile = new File(new File(indexDir, d.get("path")), 
-                        d.get("file-name"));
-                String md5current = MyUtil.getHashCode(currentFile);
-                  
-                String author = d.get("author");
-                String creationDate = d.get("creation-date");
-                String lastAuthor = d.get("last-author");
-                String lastModified = d.get("last-modified");
-                metaString = String.format("- 작성 프로그램 : %s<br/>"
-                        + "- 파일 크기: %,d bytes<br/>- Page 수: %s<br/><br/>",
-                        appName, Long.parseLong(fileSize), pageCount);
-                metaString += String.format("- 원본 파일 MD5 해시값: %s<br/>- 현재 파일 MD5 해시값: %s<br/>",
-                        md5origin, md5current);
-                if (MyUtil.verifyHash(currentFile.getAbsolutePath(), md5origin)) {
-                    metaString += "- 변동여부 검증: <b>OK! 원본과 일치</b><br/><br/>";
-                } else {
-                    metaString += "- 변동여부 검증: <b>FAIL! 원본과 다름</b><br/><br/>";
-                }
-                metaString += String.format("- 파일 작성자: %s<br/>- 최종 수정자: %s<br/>- 파일 생성일: %s<br/>- 최종 수정일: %s", 
-                        author, lastAuthor, creationDate, lastModified);
-                metadataArea.setText(metaString);
-            } catch (CorruptIndexException ex) {
-                System.out.println(ex);
-            } catch (IOException ex) {
-                System.out.println(ex);
-            }
-            contentsArea.setCaretPosition(0);
-        } else if (evt.getClickCount() == 2) {
-            // Open external program
-            String path = (String) model.getValueAt(row, 1);
-            File file;
-            try {
-                if (path.equals("..\\Files")) {
-                    String docDir = indexDir.replace("Index", "Files");
-                    String fn = (String) model.getValueAt(row, 2);
-                    file = new File(docDir, fn);
-                } else {
-                    String fn = (String) model.getValueAt(row, 2);
-                    file = new File(path, fn);
-                }
-                Desktop.getDesktop().open(file);
-            } catch (IOException ex) {
-                System.out.println(ex);
-                return;
-            }
+            resultTable.setSelectionForeground(Color.WHITE);
+            setContentsAndMetaArea(row);
+        } else if (evt.getClickCount() == 2) {            
+            resultTable.setSelectionForeground(Color.YELLOW);
+            openWithExternalProgram(row);
         }
     }//GEN-LAST:event_resultTableMouseClicked
 
+    public void setContentsAndMetaArea(int row) {
+        if (model.getValueAt(row, 0) == null) {
+            return;
+        }
+        int id = (int) model.getValueAt(row, 0);
+        ScoreDoc scoreDoc = topDocs.scoreDocs[id - 1];
+        Document d;
+        try {
+            d = searcher.doc(scoreDoc.doc);
+            String contents = d.get("contents");
+            String[] fragments = MyUtil.getFragmentsWithHighlightedTerms(analyzer, query, "contents", contents, 100, 100);
+            String highlighted = "";
+            for (String frag : fragments) {
+                highlighted += frag;
+            }
+            contentsArea.setText(highlighted.replaceAll("\n", "<br/>"));
+            // Metadata
+            String metaString = "";
+            String appName = d.get("application-name");
+            String fileSize = d.get("file-size");
+            String pageCount = d.get("page-count");
+            String md5origin = d.get("md5");
+            File currentFile = new File(new File(indexDir, d.get("path")),
+                    d.get("file-name"));
+            String md5current = MyUtil.getHashCode(currentFile);
+
+            String author = d.get("author");
+            String creationDate = d.get("creation-date");
+            String lastAuthor = d.get("last-author");
+            String lastModified = d.get("last-modified");
+
+            metaString += String.format("<ul><li>작성 프로그램: %s</li>", appName);
+            metaString += String.format("    <li>파일 크기 : %,d (KB)</li>", Long.parseLong(fileSize) / 1024);
+            metaString += String.format("    <li>페이지 수 : %s</li></ul>", pageCount);
+
+            metaString += String.format("<ul><li>원본 파일 MD5 해시값: %s</li>", md5origin);
+            metaString += String.format("    <li>현재 파일 MD5 해시값: %s</li>", md5current);
+            if (MyUtil.verifyHash(currentFile.getAbsolutePath(), md5origin)) {
+                metaString += "<li>변동여부 검증: <b>OK! 원본과 일치</b></li></ul>";
+            } else {
+                metaString += "<li>변동여부 검증: <b>FAIL! 원본과 다름</b></li></ul>";
+            }
+            metaString += String.format("<ul><li>파일 작성자: %s</li>", author);
+            metaString += String.format("    <li>최종 수정자: %s</li>", lastAuthor);
+            metaString += String.format("    <li>파일 생성일: %s</li>", creationDate);
+            metaString += String.format("    <li>최종 수정일: %s</li></ul>", lastModified);
+            metadataArea.setText(metaString);
+        } catch (CorruptIndexException ex) {
+            System.out.println(ex);
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+        contentsArea.setCaretPosition(0);
+    }
+    
+    public void openWithExternalProgram(int row) {
+        if (model.getValueAt(row, 0) == null) {
+            return;
+        }
+        // Open external program
+        String path = (String) model.getValueAt(row, 1);
+        File file;
+        try {
+            if (path.equals("..\\Files")) {
+                String docDir = indexDir.replace("Index", "Files");
+                String fn = (String) model.getValueAt(row, 2);
+                file = new File(docDir, fn);
+            } else {
+                String fn = (String) model.getValueAt(row, 2);
+                file = new File(path, fn);
+            }
+            Desktop.getDesktop().open(file);
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
+    }
+    
     private void pageTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pageTextActionPerformed
         int pageNo = page.getCurrentPageNo();
         try {
@@ -715,19 +753,45 @@ public class Searcher extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_firstButtonActionPerformed
 
+    private void resultTableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_resultTableKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_resultTableKeyPressed
+
+    private void resultTablePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_resultTablePropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_resultTablePropertyChange
+
+    private void resultTableFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_resultTableFocusGained
+        // TODO add your handling code here:
+    }//GEN-LAST:event_resultTableFocusGained
+
+    private void resultTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_resultTableKeyReleased
+        // TODO add your handling code here:
+        resultTable.setSelectionForeground(Color.WHITE);
+        setContentsAndMetaArea(resultTable.getSelectedRow());
+    }//GEN-LAST:event_resultTableKeyReleased
+
     public void search () throws IOException {
         QueryParser parser = new QueryParser(Version.LUCENE_36, "contents", analyzer);
         try {
             query = parser.parse(queryString);
         } catch (ParseException ex) {
             System.out.println(ex);
+            JOptionPane.showMessageDialog(this, "질의어를 해석할 수 없습니다\n질의어를 다시 확인해 주세요.",
+                    "질의어 해석 오류", JOptionPane.ERROR_MESSAGE);
+
+            return;
         }
         
-        //TopDocs docs = null;
         try {
             topDocs = searcher.search(query, page.getEnd());
         } catch (IOException ex) {
-            Logger.getLogger(Searcher.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
+            return;
+        }
+        if (topDocs.totalHits == 0) {
+            pageLabel.setText("Page: 0/0, (Total Hits: 0)"); 
+            return;
         }
         page.setTotalCount(topDocs.totalHits);
         System.out.format("Total hits: %d, Total Page: %d\n",
@@ -735,7 +799,10 @@ public class Searcher extends javax.swing.JFrame {
 
         System.out.println("Current page: " + page.getCurrentPageNo());
         // for tablemodel
-        Object[][] data = new Object[page.getPageSize()][3];
+        int rowCount = (int) Math.min(page.getPageSize(), 
+                (page.getTotalCount() - (page.getCurrentPageNo()-1) * page.getPageSize()));
+        Object[][] data = new Object[rowCount][3];
+        //Object[][] data = new Object[page.getPageSize()][3];
         String[] columnNames = {"SQ", "Path", "File Name" };
         for (int i = page.getStart(); i < page.getEnd(); i++) {
             ScoreDoc scoreDoc = topDocs.scoreDocs[i];
@@ -750,6 +817,9 @@ public class Searcher extends javax.swing.JFrame {
                 page.getCurrentPageNo(), page.getPageCount(), page.getTotalCount()));
         model = new MyTableModel(data, columnNames);
         resultTable.setModel(model);
+        resultTable.requestFocus();
+        resultTable.setRowSelectionInterval(0, 0);
+        setContentsAndMetaArea(0);
         resultTableColumnWidthAdjust();
         setNavigateButtonsState();
 	}
