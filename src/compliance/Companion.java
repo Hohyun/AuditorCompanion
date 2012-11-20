@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -58,6 +62,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     TableModelListener, ListSelectionListener {
 
     public Searcher searcher;
+    public final static Logger logger = Logger.getLogger(Companion.class.getName());
     //private String queryString;
     private String indexDir;
     private MyTableModel model;
@@ -79,8 +84,8 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     private File caseInfoFile;
     private String auditor = "";  
     private DocLang docLang;
-    private List<String> jobDirs = new ArrayList<String>();
-    private List<String> jobFileTypes = new ArrayList<String>();
+    private List<String> jobDirs = new ArrayList<>();
+    private List<String> jobFileTypes = new ArrayList<>();
     private Stage stage;
 
     @Override
@@ -104,6 +109,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         searcher = new Searcher(this);
         initComponents();
         initCollector();
+        initAdvisor();
         setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
@@ -222,6 +228,33 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
    }
     // 화면 초기화 (Treeview) 끝
     
+    // Initialize Logger
+    public void initLogger(String dir) throws IOException {
+        logger.setLevel(Level.WARNING);
+        FileHandler handler = new FileHandler(dir + "\\log.txt");
+        SimpleFormatter formatter = new SimpleFormatter();
+        handler.setFormatter(formatter);
+        logger.addHandler(handler);
+    }
+    
+    public void initAdvisor() {
+        java.net.URL helpURL1 = Companion.class.getResource("HowToUseBasic.html");
+        java.net.URL helpURL2 = Companion.class.getResource("HowToUseCollect.html");
+        java.net.URL helpURL3 = Companion.class.getResource("HowToUseSearch.html");
+        java.net.URL helpURL4 = Companion.class.getResource("HowToUseQuerySyntax.html");
+        if (helpURL1 != null && helpURL2 != null) {
+            try {
+                advisorBasic.setPage(helpURL1);
+                advisorCollect.setPage(helpURL2);
+                advisorSearch.setPage(helpURL3);
+                advisorQuerySyntax.setPage(helpURL4);                    
+            } catch (IOException e) {
+                System.err.println("Attempted to read a bad URL: " + e);
+            }
+        } else {
+            System.err.println("Couldn't find help file");
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -237,21 +270,21 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jLabel2s = new javax.swing.JLabel();
         jSP2s = new javax.swing.JScrollPane();
         searchWords = new javax.swing.JTextArea();
-        searchButton = new javax.swing.JButton();
+        buttonSearch = new javax.swing.JButton();
         indexInfoLabel = new javax.swing.JLabel();
         jLabel4s = new javax.swing.JLabel();
-        clearButton = new javax.swing.JButton();
-        indexOpenButton = new javax.swing.JButton();
-        keywordLoadButton = new javax.swing.JButton();
-        keywordSaveButton = new javax.swing.JButton();
+        buttonClear = new javax.swing.JButton();
+        buttonOpenIndex = new javax.swing.JButton();
+        buttonKeywordLoad = new javax.swing.JButton();
+        buttonKeywordSave = new javax.swing.JButton();
         midP = new javax.swing.JPanel();
         hSP1s = new javax.swing.JSplitPane();
         midLeftPanel = new javax.swing.JPanel();
         midLeftBottomP = new javax.swing.JPanel();
-        firstButton = new javax.swing.JButton();
-        beforeButton = new javax.swing.JButton();
-        nextButton = new javax.swing.JButton();
-        lastButton = new javax.swing.JButton();
+        buttonFirst = new javax.swing.JButton();
+        buttonBefore = new javax.swing.JButton();
+        buttonNext = new javax.swing.JButton();
+        buttonLast = new javax.swing.JButton();
         pageText = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         resultTable = new javax.swing.JTable();
@@ -287,26 +320,39 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         buttonIndex = new javax.swing.JButton();
         buttonReset = new javax.swing.JButton();
         advisorP = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel7 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        advisorBasic = new javax.swing.JEditorPane();
+        jPanel8 = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        advisorCollect = new javax.swing.JEditorPane();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        advisorSearch = new javax.swing.JEditorPane();
+        jPanel10 = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        advisorQuerySyntax = new javax.swing.JEditorPane();
         mainMenuBar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        exitMenuItem = new javax.swing.JMenuItem();
+        menuItemExit = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
-        makeCaseMenuItem = new javax.swing.JMenuItem();
-        openCaseMenuItem = new javax.swing.JMenuItem();
-        analyzeMenuItem = new javax.swing.JMenuItem();
-        copyMenuItem = new javax.swing.JMenuItem();
-        indexingMenuItem = new javax.swing.JMenuItem();
-        resetCaseMenuItem = new javax.swing.JMenuItem();
+        menuItemMakeCase = new javax.swing.JMenuItem();
+        menuItemOpenCase = new javax.swing.JMenuItem();
+        menuItemAnalyze = new javax.swing.JMenuItem();
+        menuItemCopy = new javax.swing.JMenuItem();
+        menuItemIndexing = new javax.swing.JMenuItem();
+        menuItemResetCase = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        openIndexMenuItem = new javax.swing.JMenuItem();
-        searchMenuItem = new javax.swing.JMenuItem();
-        clearMenuItem = new javax.swing.JMenuItem();
+        menuItemOpenIndex = new javax.swing.JMenuItem();
+        menuItemSearch = new javax.swing.JMenuItem();
+        menuItemClear = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
-        keywordLoadMenuItem = new javax.swing.JMenuItem();
-        keywordSaveMenuItem = new javax.swing.JMenuItem();
+        menuItemKeywordLoad = new javax.swing.JMenuItem();
+        menuItemKeywordSave = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        howToUseMenuItem = new javax.swing.JMenuItem();
-        aboutMenuItem = new javax.swing.JMenuItem();
+        menuItemHowToUse = new javax.swing.JMenuItem();
+        menuItemAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Auditor's Companion for Korean Air");
@@ -332,12 +378,12 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         searchWords.setRows(5);
         jSP2s.setViewportView(searchWords);
 
-        searchButton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        searchButton.setText("Search");
-        searchButton.setEnabled(false);
-        searchButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonSearch.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
+        buttonSearch.setText("Search");
+        buttonSearch.setEnabled(false);
+        buttonSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchButtonActionPerformed(evt);
+                buttonSearchActionPerformed(evt);
             }
         });
 
@@ -351,38 +397,38 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jLabel4s.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jLabel4s.setText("(예) 합의 회의 가격 인상 저지 +필수단어 -제외단어 필드이름:검색어");
 
-        clearButton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        clearButton.setText("Clear");
-        clearButton.setEnabled(false);
-        clearButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonClear.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
+        buttonClear.setText("Clear");
+        buttonClear.setEnabled(false);
+        buttonClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearButtonActionPerformed(evt);
+                buttonClearActionPerformed(evt);
             }
         });
 
-        indexOpenButton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        indexOpenButton.setText("Index Open");
-        indexOpenButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonOpenIndex.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
+        buttonOpenIndex.setText("Open Index");
+        buttonOpenIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                indexOpenButtonActionPerformed(evt);
+                buttonOpenIndexActionPerformed(evt);
             }
         });
 
-        keywordLoadButton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        keywordLoadButton.setText("Load");
-        keywordLoadButton.setEnabled(false);
-        keywordLoadButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonKeywordLoad.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
+        buttonKeywordLoad.setText("Load");
+        buttonKeywordLoad.setEnabled(false);
+        buttonKeywordLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                keywordLoadButtonActionPerformed(evt);
+                buttonKeywordLoadActionPerformed(evt);
             }
         });
 
-        keywordSaveButton.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        keywordSaveButton.setText("Save");
-        keywordSaveButton.setEnabled(false);
-        keywordSaveButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonKeywordSave.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
+        buttonKeywordSave.setText("Save");
+        buttonKeywordSave.setEnabled(false);
+        buttonKeywordSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                keywordSaveButtonActionPerformed(evt);
+                buttonKeywordSaveActionPerformed(evt);
             }
         });
 
@@ -395,19 +441,19 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 .addGroup(upperPsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSP2s)
                     .addGroup(upperPsLayout.createSequentialGroup()
-                        .addComponent(searchButton)
+                        .addComponent(buttonSearch)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(clearButton)
+                        .addComponent(buttonClear)
                         .addGap(6, 6, 6)
-                        .addComponent(indexOpenButton)
+                        .addComponent(buttonOpenIndex)
                         .addGap(27, 27, 27)
                         .addComponent(jLabel2s, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4s, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(keywordLoadButton)
+                        .addComponent(buttonKeywordLoad)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(keywordSaveButton)
+                        .addComponent(buttonKeywordSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                         .addComponent(indexInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -421,12 +467,12 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                     .addGroup(upperPsLayout.createSequentialGroup()
                         .addGroup(upperPsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2s)
-                            .addComponent(searchButton)
+                            .addComponent(buttonSearch)
                             .addComponent(jLabel4s)
-                            .addComponent(indexOpenButton)
-                            .addComponent(clearButton)
-                            .addComponent(keywordLoadButton)
-                            .addComponent(keywordSaveButton))
+                            .addComponent(buttonOpenIndex)
+                            .addComponent(buttonClear)
+                            .addComponent(buttonKeywordLoad)
+                            .addComponent(buttonKeywordSave))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSP2s, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE))
@@ -443,45 +489,45 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         midLeftBottomP.setBackground(new java.awt.Color(204, 204, 204));
 
-        firstButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first.jpg"))); // NOI18N
-        firstButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 0)));
-        firstButton.setEnabled(false);
-        firstButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first1.jpg"))); // NOI18N
-        firstButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonFirst.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first.jpg"))); // NOI18N
+        buttonFirst.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 0)));
+        buttonFirst.setEnabled(false);
+        buttonFirst.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/first1.jpg"))); // NOI18N
+        buttonFirst.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                firstButtonActionPerformed(evt);
+                buttonFirstActionPerformed(evt);
             }
         });
 
-        beforeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back.jpg"))); // NOI18N
-        beforeButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51)));
-        beforeButton.setEnabled(false);
-        beforeButton.setMaximumSize(new java.awt.Dimension(77, 57));
-        beforeButton.setMinimumSize(new java.awt.Dimension(77, 57));
-        beforeButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back1.jpg"))); // NOI18N
-        beforeButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonBefore.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back.jpg"))); // NOI18N
+        buttonBefore.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51)));
+        buttonBefore.setEnabled(false);
+        buttonBefore.setMaximumSize(new java.awt.Dimension(77, 57));
+        buttonBefore.setMinimumSize(new java.awt.Dimension(77, 57));
+        buttonBefore.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/back1.jpg"))); // NOI18N
+        buttonBefore.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                beforeButtonActionPerformed(evt);
+                buttonBeforeActionPerformed(evt);
             }
         });
 
-        nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward.jpg"))); // NOI18N
-        nextButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51)));
-        nextButton.setEnabled(false);
-        nextButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward1.jpg"))); // NOI18N
-        nextButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward.jpg"))); // NOI18N
+        buttonNext.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 51)));
+        buttonNext.setEnabled(false);
+        buttonNext.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/foward1.jpg"))); // NOI18N
+        buttonNext.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextButtonActionPerformed(evt);
+                buttonNextActionPerformed(evt);
             }
         });
 
-        lastButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last.jpg"))); // NOI18N
-        lastButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 0)));
-        lastButton.setEnabled(false);
-        lastButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last1.jpg"))); // NOI18N
-        lastButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonLast.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last.jpg"))); // NOI18N
+        buttonLast.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 153, 0)));
+        buttonLast.setEnabled(false);
+        buttonLast.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/last1.jpg"))); // NOI18N
+        buttonLast.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lastButtonActionPerformed(evt);
+                buttonLastActionPerformed(evt);
             }
         });
 
@@ -500,13 +546,13 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             midLeftBottomPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(midLeftBottomPLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(firstButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonFirst, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(beforeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonBefore, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonNext, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lastButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(buttonLast, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pageText, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -516,11 +562,11 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, midLeftBottomPLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(midLeftBottomPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(firstButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonFirst, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(pageText, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lastButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(beforeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(buttonLast, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonNext, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(buttonBefore, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -884,133 +930,228 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         mainTabbedPane.addTab("Collector", collectorP);
 
+        advisorBasic.setContentType("text/html"); // NOI18N
+        jScrollPane5.setViewportView(advisorBasic);
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("기본 정보", jPanel7);
+
+        advisorCollect.setContentType("text/html"); // NOI18N
+        jScrollPane6.setViewportView(advisorCollect);
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("문서수집 방법", jPanel8);
+
+        advisorSearch.setContentType("text/html"); // NOI18N
+        jScrollPane7.setViewportView(advisorSearch);
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("텍스트검색 방법", jPanel9);
+
+        advisorQuerySyntax.setContentType("text/html"); // NOI18N
+        advisorQuerySyntax.setToolTipText("");
+        jScrollPane8.setViewportView(advisorQuerySyntax);
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("질의어 문법", jPanel10);
+
         javax.swing.GroupLayout advisorPLayout = new javax.swing.GroupLayout(advisorP);
         advisorP.setLayout(advisorPLayout);
         advisorPLayout.setHorizontalGroup(
             advisorPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1246, Short.MAX_VALUE)
+            .addGroup(advisorPLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
         );
         advisorPLayout.setVerticalGroup(
             advisorPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 869, Short.MAX_VALUE)
+            .addGroup(advisorPLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
         );
 
         mainTabbedPane.addTab("Advisor", advisorP);
 
         jMenu1.setText("파일");
 
-        exitMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
-        exitMenuItem.setText("Exit");
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemExit.setText("Exit");
+        menuItemExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitMenuItemActionPerformed(evt);
+                menuItemExitActionPerformed(evt);
             }
         });
-        jMenu1.add(exitMenuItem);
+        jMenu1.add(menuItemExit);
 
         mainMenuBar.add(jMenu1);
 
         jMenu5.setText("수집");
 
-        makeCaseMenuItem.setText("New");
-        makeCaseMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemMakeCase.setText("New");
+        menuItemMakeCase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                makeCaseMenuItemActionPerformed(evt);
+                menuItemMakeCaseActionPerformed(evt);
             }
         });
-        jMenu5.add(makeCaseMenuItem);
+        jMenu5.add(menuItemMakeCase);
 
-        openCaseMenuItem.setText("Open");
-        openCaseMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemOpenCase.setText("Open");
+        menuItemOpenCase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openCaseMenuItemActionPerformed(evt);
+                menuItemOpenCaseActionPerformed(evt);
             }
         });
-        jMenu5.add(openCaseMenuItem);
+        jMenu5.add(menuItemOpenCase);
 
-        analyzeMenuItem.setText("Analyze");
-        analyzeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemAnalyze.setText("Analyze");
+        menuItemAnalyze.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                analyzeMenuItemActionPerformed(evt);
+                menuItemAnalyzeActionPerformed(evt);
             }
         });
-        jMenu5.add(analyzeMenuItem);
+        jMenu5.add(menuItemAnalyze);
 
-        copyMenuItem.setText("Copy");
-        copyMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemCopy.setText("Copy");
+        menuItemCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                copyMenuItemActionPerformed(evt);
+                menuItemCopyActionPerformed(evt);
             }
         });
-        jMenu5.add(copyMenuItem);
+        jMenu5.add(menuItemCopy);
 
-        indexingMenuItem.setText("Index");
-        indexingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemIndexing.setText("Index");
+        menuItemIndexing.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                indexingMenuItemActionPerformed(evt);
+                menuItemIndexingActionPerformed(evt);
             }
         });
-        jMenu5.add(indexingMenuItem);
+        jMenu5.add(menuItemIndexing);
 
-        resetCaseMenuItem.setText("Reset");
-        resetCaseMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemResetCase.setText("Reset");
+        menuItemResetCase.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetCaseMenuItemActionPerformed(evt);
+                menuItemResetCaseActionPerformed(evt);
             }
         });
-        jMenu5.add(resetCaseMenuItem);
+        jMenu5.add(menuItemResetCase);
 
         mainMenuBar.add(jMenu5);
 
         jMenu2.setText("검색");
 
-        openIndexMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        openIndexMenuItem.setText("Open Index");
-        openIndexMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemOpenIndex.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemOpenIndex.setText("Open Index");
+        menuItemOpenIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openIndexMenuItemActionPerformed(evt);
+                menuItemOpenIndexActionPerformed(evt);
             }
         });
-        jMenu2.add(openIndexMenuItem);
+        jMenu2.add(menuItemOpenIndex);
 
-        searchMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
-        searchMenuItem.setText("Search");
-        searchMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemSearch.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemSearch.setText("Search");
+        menuItemSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                searchMenuItemActionPerformed(evt);
+                menuItemSearchActionPerformed(evt);
             }
         });
-        jMenu2.add(searchMenuItem);
+        jMenu2.add(menuItemSearch);
 
-        clearMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK));
-        clearMenuItem.setText("Clear");
-        clearMenuItem.setToolTipText("");
-        clearMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemClear.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK));
+        menuItemClear.setText("Clear");
+        menuItemClear.setToolTipText("");
+        menuItemClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearMenuItemActionPerformed(evt);
+                menuItemClearActionPerformed(evt);
             }
         });
-        jMenu2.add(clearMenuItem);
+        jMenu2.add(menuItemClear);
 
         jMenu4.setText("Keyword");
 
-        keywordLoadMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
-        keywordLoadMenuItem.setText("Load");
-        keywordLoadMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemKeywordLoad.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_L, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemKeywordLoad.setText("Load");
+        menuItemKeywordLoad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                keywordLoadMenuItemActionPerformed(evt);
+                menuItemKeywordLoadActionPerformed(evt);
             }
         });
-        jMenu4.add(keywordLoadMenuItem);
+        jMenu4.add(menuItemKeywordLoad);
 
-        keywordSaveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        keywordSaveMenuItem.setText("Save As");
-        keywordSaveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemKeywordSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemKeywordSave.setText("Save As");
+        menuItemKeywordSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                keywordSaveMenuItemActionPerformed(evt);
+                menuItemKeywordSaveActionPerformed(evt);
             }
         });
-        jMenu4.add(keywordSaveMenuItem);
+        jMenu4.add(menuItemKeywordSave);
 
         jMenu2.add(jMenu4);
 
@@ -1018,17 +1159,17 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         jMenu3.setText("도움말");
 
-        howToUseMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        howToUseMenuItem.setText("How to use");
-        jMenu3.add(howToUseMenuItem);
+        menuItemHowToUse.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
+        menuItemHowToUse.setText("How to use");
+        jMenu3.add(menuItemHowToUse);
 
-        aboutMenuItem.setText("About");
-        aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        menuItemAbout.setText("About");
+        menuItemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                aboutMenuItemActionPerformed(evt);
+                menuItemAboutActionPerformed(evt);
             }
         });
-        jMenu3.add(aboutMenuItem);
+        jMenu3.add(menuItemAbout);
 
         mainMenuBar.add(jMenu3);
 
@@ -1048,37 +1189,37 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
+    private void buttonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSearchActionPerformed
         searcher.setQueryString(searchWords.getText());
         try {
             searcher.search();
-            clearButton.setEnabled(true);
-            searchButton.setEnabled(false);
-            indexOpenButton.setEnabled(false);
-            keywordLoadButton.setEnabled(false);
-            keywordSaveButton.setEnabled(true);
+            buttonClear.setEnabled(true);
+            buttonSearch.setEnabled(false);
+            buttonOpenIndex.setEnabled(false);
+            buttonKeywordLoad.setEnabled(false);
+            buttonKeywordSave.setEnabled(true);
         } catch (Exception ex) {
             System.out.println(ex);
         }
-    }//GEN-LAST:event_searchButtonActionPerformed
+    }//GEN-LAST:event_buttonSearchActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
         
     }//GEN-LAST:event_formWindowClosed
 
-    private void keywordSaveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keywordSaveMenuItemActionPerformed
-        keywordSaveButtonActionPerformed(evt);
-    }//GEN-LAST:event_keywordSaveMenuItemActionPerformed
+    private void menuItemKeywordSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemKeywordSaveActionPerformed
+        buttonKeywordSaveActionPerformed(evt);
+    }//GEN-LAST:event_menuItemKeywordSaveActionPerformed
 
-    private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
+    private void menuItemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAboutActionPerformed
         JOptionPane.showMessageDialog(this, "Auditor's Companion for Korean Air\n\n"
                 + "- 주요기능 : 문서 자동 수집, 키워드 검색\n"
                 + "- Developed by H.H.Kim (SELBI)\n"
                 + "- Ver 1.0 (2012.11)");
-    }//GEN-LAST:event_aboutMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemAboutActionPerformed
 
-    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+    private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
         searchWords.setText(null);
         contentsArea.setText(null);
         metadataArea.setText(null);
@@ -1089,11 +1230,11 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         setNavigateButtonsDisable();
         searchWords.requestFocus();
         
-        searchButton.setEnabled(true);
-        indexOpenButton.setEnabled(true);
-        keywordLoadButton.setEnabled(true);
-        keywordSaveButton.setEnabled(false);
-    }//GEN-LAST:event_clearButtonActionPerformed
+        buttonSearch.setEnabled(true);
+        buttonOpenIndex.setEnabled(true);
+        buttonKeywordLoad.setEnabled(true);
+        buttonKeywordSave.setEnabled(false);
+    }//GEN-LAST:event_buttonClearActionPerformed
 
     private void resultTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_resultTableMouseClicked
         int row = resultTable.getSelectedRow();
@@ -1149,41 +1290,41 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         }
     }//GEN-LAST:event_pageTextActionPerformed
 
-    private void lastButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lastButtonActionPerformed
+    private void buttonLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLastActionPerformed
         searcher.page.setCurrentPageNo(searcher.page.getPageCount());
         try {
             searcher.search();
         } catch (IOException ex) {
             System.out.println(ex);
         }
-    }//GEN-LAST:event_lastButtonActionPerformed
+    }//GEN-LAST:event_buttonLastActionPerformed
 
-    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
+    private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
         searcher.page.setCurrentPageNo(searcher.page.getCurrentPageNo()+1);
         try {
             searcher.search();
         } catch (IOException ex) {
             System.out.println(ex);
         }
-    }//GEN-LAST:event_nextButtonActionPerformed
+    }//GEN-LAST:event_buttonNextActionPerformed
 
-    private void beforeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_beforeButtonActionPerformed
+    private void buttonBeforeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBeforeActionPerformed
         searcher.page.setCurrentPageNo(searcher.page.getCurrentPageNo()-1);
         try {
             searcher.search();
         } catch (IOException ex) {
             System.out.println(ex);
         }
-    }//GEN-LAST:event_beforeButtonActionPerformed
+    }//GEN-LAST:event_buttonBeforeActionPerformed
 
-    private void firstButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstButtonActionPerformed
+    private void buttonFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFirstActionPerformed
         searcher.page.setCurrentPageNo(1);
         try {
             searcher.search();
         } catch (IOException ex) {
             System.out.println(ex);
         }
-    }//GEN-LAST:event_firstButtonActionPerformed
+    }//GEN-LAST:event_buttonFirstActionPerformed
 
     private void resultTableKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_resultTableKeyPressed
         // TODO add your handling code here:
@@ -1211,11 +1352,16 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         if (caseName.equals("") || auditor.equals("") || caseDir.equals("")) {
             // setMessage(" Case was not created. Case Name, Auditor and Target Directory information should be supplied");
         } else {
-            setStage(Stage.CASE_CREATED);
-            System.out.println(caseName);
-            System.out.println(caseInfoFile.getAbsolutePath());
-            System.out.println(fileListFile.getAbsolutePath());
-            System.out.println(docLang);
+            try {
+                setStage(Stage.CASE_CREATED);
+                initLogger(caseDir);
+//                System.out.println(caseName);
+//                System.out.println(caseInfoFile.getAbsolutePath());
+//                System.out.println(fileListFile.getAbsolutePath());
+//                System.out.println(docLang);
+            } catch (IOException ex) {
+                Logger.getLogger(Companion.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_buttonNewActionPerformed
 
@@ -1325,61 +1471,66 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         setCaseName("");        
     }//GEN-LAST:event_buttonResetActionPerformed
 
-    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+    private void menuItemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemExitActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_exitMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemExitActionPerformed
 
-    private void makeCaseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeCaseMenuItemActionPerformed
+    private void menuItemMakeCaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemMakeCaseActionPerformed
         buttonNewActionPerformed(evt);
         mainTabbedPane.setSelectedIndex(1);
-    }//GEN-LAST:event_makeCaseMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemMakeCaseActionPerformed
 
-    private void openCaseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openCaseMenuItemActionPerformed
+    private void menuItemOpenCaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemOpenCaseActionPerformed
         buttonOpenActionPerformed(evt);
         mainTabbedPane.setSelectedIndex(1);
-    }//GEN-LAST:event_openCaseMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemOpenCaseActionPerformed
 
-    private void analyzeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeMenuItemActionPerformed
+    private void menuItemAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAnalyzeActionPerformed
         buttonAnalyzeActionPerformed(evt);
-    }//GEN-LAST:event_analyzeMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemAnalyzeActionPerformed
 
-    private void copyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyMenuItemActionPerformed
+    private void menuItemCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCopyActionPerformed
         buttonCopyActionPerformed(evt);
-    }//GEN-LAST:event_copyMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemCopyActionPerformed
 
-    private void indexingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexingMenuItemActionPerformed
+    private void menuItemIndexingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemIndexingActionPerformed
         buttonIndexActionPerformed(evt);
-    }//GEN-LAST:event_indexingMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemIndexingActionPerformed
 
-    private void resetCaseMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetCaseMenuItemActionPerformed
+    private void menuItemResetCaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemResetCaseActionPerformed
         buttonResetActionPerformed(evt);
-    }//GEN-LAST:event_resetCaseMenuItemActionPerformed
+    }//GEN-LAST:event_menuItemResetCaseActionPerformed
 
-    private void openIndexMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openIndexMenuItemActionPerformed
-        indexOpenButtonActionPerformed(evt);
-    }//GEN-LAST:event_openIndexMenuItemActionPerformed
+    private void menuItemOpenIndexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemOpenIndexActionPerformed
+        buttonOpenIndexActionPerformed(evt);
+    }//GEN-LAST:event_menuItemOpenIndexActionPerformed
 
-    private void indexOpenButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexOpenButtonActionPerformed
+    private void buttonOpenIndexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonOpenIndexActionPerformed
         IndexOpenDialog dlg = new IndexOpenDialog(this, true);
         dlg.setLocation((this.getWidth()-dlg.getWidth())/2, 
                 (this.getHeight()-dlg.getHeight())/2);
         dlg.setVisible(true);
         mainTabbedPane.setSelectedIndex(0);
-    }//GEN-LAST:event_indexOpenButtonActionPerformed
+        try {
+            initLogger(new File(indexDir).getParent());
+        } catch (IOException ex) {
+            Logger.getLogger(Companion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_buttonOpenIndexActionPerformed
 
-    private void clearMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearMenuItemActionPerformed
-        clearButtonActionPerformed(evt);
-    }//GEN-LAST:event_clearMenuItemActionPerformed
+    private void menuItemClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemClearActionPerformed
+       buttonClearActionPerformed(evt);
+    }//GEN-LAST:event_menuItemClearActionPerformed
 
-    private void searchMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchMenuItemActionPerformed
-        searchButtonActionPerformed(evt);
-    }//GEN-LAST:event_searchMenuItemActionPerformed
+    private void menuItemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemSearchActionPerformed
+        buttonSearchActionPerformed(evt);
+    }//GEN-LAST:event_menuItemSearchActionPerformed
 
-    private void keywordLoadMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keywordLoadMenuItemActionPerformed
-        keywordLoadButtonActionPerformed(evt);
-    }//GEN-LAST:event_keywordLoadMenuItemActionPerformed
+    private void menuItemKeywordLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemKeywordLoadActionPerformed
+        buttonKeywordLoadActionPerformed(evt);
+    }//GEN-LAST:event_menuItemKeywordLoadActionPerformed
 
-    private void keywordLoadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keywordLoadButtonActionPerformed
+    private void buttonKeywordLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonKeywordLoadActionPerformed
         JFileChooser chooser = new JFileChooser();       
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "Search Keyword file (.kwd)", "kwd");
@@ -1399,9 +1550,9 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 System.out.println(ex);
             }
         }                   
-    }//GEN-LAST:event_keywordLoadButtonActionPerformed
+    }//GEN-LAST:event_buttonKeywordLoadActionPerformed
 
-    private void keywordSaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_keywordSaveButtonActionPerformed
+    private void buttonKeywordSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonKeywordSaveActionPerformed
         // TODO add your handling code here:
         JFileChooser chooser = new JFileChooser();       
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
@@ -1418,7 +1569,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 System.out.println(ex);
             }
         }                           
-    }//GEN-LAST:event_keywordSaveButtonActionPerformed
+    }//GEN-LAST:event_buttonKeywordSaveActionPerformed
     
     @Override
     public void valueChanged(TreeCheckingEvent e) {
@@ -1524,31 +1675,33 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JEditorPane advisorBasic;
+    private javax.swing.JEditorPane advisorCollect;
     private javax.swing.JPanel advisorP;
-    private javax.swing.JMenuItem analyzeMenuItem;
-    private javax.swing.JButton beforeButton;
+    private javax.swing.JEditorPane advisorQuerySyntax;
+    private javax.swing.JEditorPane advisorSearch;
     private javax.swing.JPanel bottomP;
     private javax.swing.JButton buttonAnalyze;
+    private javax.swing.JButton buttonBefore;
+    private javax.swing.JButton buttonClear;
     private javax.swing.JButton buttonCopy;
+    private javax.swing.JButton buttonFirst;
     private javax.swing.JButton buttonIndex;
+    private javax.swing.JButton buttonKeywordLoad;
+    private javax.swing.JButton buttonKeywordSave;
+    private javax.swing.JButton buttonLast;
     private javax.swing.JButton buttonNew;
+    private javax.swing.JButton buttonNext;
     private javax.swing.JButton buttonOpen;
+    private javax.swing.JButton buttonOpenIndex;
     private javax.swing.JButton buttonReset;
-    private javax.swing.JButton clearButton;
-    private javax.swing.JMenuItem clearMenuItem;
+    private javax.swing.JButton buttonSearch;
     private javax.swing.JPanel collectorP;
     private javax.swing.JEditorPane contentsArea;
-    private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JTextArea etcFileTypes;
-    private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JButton firstButton;
     private javax.swing.JSplitPane hSP1s;
     private javax.swing.JSplitPane hSplitPane;
-    private javax.swing.JMenuItem howToUseMenuItem;
     private javax.swing.JLabel indexInfoLabel;
-    private javax.swing.JButton indexOpenButton;
-    private javax.swing.JMenuItem indexingMenuItem;
     private javax.swing.JTable infoTable;
     private javax.swing.JLabel jLabel1s;
     private javax.swing.JLabel jLabel2s;
@@ -1559,41 +1712,52 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jSP2s;
     private javax.swing.JScrollPane jSPs;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JButton keywordLoadButton;
-    private javax.swing.JMenuItem keywordLoadMenuItem;
-    private javax.swing.JButton keywordSaveButton;
-    private javax.swing.JMenuItem keywordSaveMenuItem;
-    private javax.swing.JButton lastButton;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblCase;
     private javax.swing.JLabel lblStage;
     private javax.swing.JLabel lblTargetDir;
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JTabbedPane mainTabbedPane;
-    private javax.swing.JMenuItem makeCaseMenuItem;
+    private javax.swing.JMenuItem menuItemAbout;
+    private javax.swing.JMenuItem menuItemAnalyze;
+    private javax.swing.JMenuItem menuItemClear;
+    private javax.swing.JMenuItem menuItemCopy;
+    private javax.swing.JMenuItem menuItemExit;
+    private javax.swing.JMenuItem menuItemHowToUse;
+    private javax.swing.JMenuItem menuItemIndexing;
+    private javax.swing.JMenuItem menuItemKeywordLoad;
+    private javax.swing.JMenuItem menuItemKeywordSave;
+    private javax.swing.JMenuItem menuItemMakeCase;
+    private javax.swing.JMenuItem menuItemOpenCase;
+    private javax.swing.JMenuItem menuItemOpenIndex;
+    private javax.swing.JMenuItem menuItemResetCase;
+    private javax.swing.JMenuItem menuItemSearch;
     private javax.swing.JEditorPane metadataArea;
     private javax.swing.JPanel midLeftBottomP;
     private javax.swing.JPanel midLeftPanel;
     private javax.swing.JPanel midP;
-    private javax.swing.JButton nextButton;
-    private javax.swing.JMenuItem openCaseMenuItem;
-    private javax.swing.JMenuItem openIndexMenuItem;
     private javax.swing.JLabel pageLabel;
     private javax.swing.JTextField pageText;
-    private javax.swing.JMenuItem resetCaseMenuItem;
     private javax.swing.JTable resultTable;
-    private javax.swing.JButton searchButton;
-    private javax.swing.JMenuItem searchMenuItem;
     private javax.swing.JTextArea searchWords;
     private javax.swing.JPanel searcherP;
     private javax.swing.JLabel statusLabel;
@@ -1625,32 +1789,32 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             setNavigateButtonsDisable();
         } else if (totalPage > 1) {
             if (curPage == 1) {  // first page
-                firstButton.setEnabled(false);
-                beforeButton.setEnabled(false);
-                nextButton.setEnabled(true);
-                lastButton.setEnabled(true);
+                buttonFirst.setEnabled(false);
+                buttonBefore.setEnabled(false);
+                buttonNext.setEnabled(true);
+                buttonLast.setEnabled(true);
                 pageText.setEnabled(true);
             } else if (curPage == searcher.page.getPageCount()) { // last page
-                firstButton.setEnabled(true);
-                beforeButton.setEnabled(true);
-                nextButton.setEnabled(false);
-                lastButton.setEnabled(false);
+                buttonFirst.setEnabled(true);
+                buttonBefore.setEnabled(true);
+                buttonNext.setEnabled(false);
+                buttonLast.setEnabled(false);
                 pageText.setEnabled(true);
             } else {
-                firstButton.setEnabled(true);
-                beforeButton.setEnabled(true);
-                nextButton.setEnabled(true);
-                lastButton.setEnabled(true);
+                buttonFirst.setEnabled(true);
+                buttonBefore.setEnabled(true);
+                buttonNext.setEnabled(true);
+                buttonLast.setEnabled(true);
                 pageText.setEnabled(true);
             }
         }
     }
     
     public void setNavigateButtonsDisable() {
-        firstButton.setEnabled(false);
-        beforeButton.setEnabled(false);
-        nextButton.setEnabled(false);
-        lastButton.setEnabled(false);
+        buttonFirst.setEnabled(false);
+        buttonBefore.setEnabled(false);
+        buttonNext.setEnabled(false);
+        buttonLast.setEnabled(false);
         pageText.setEnabled(false);
     }
 
@@ -1869,19 +2033,19 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }
     
     public void setEnableSearchButton(){
-        searchButton.setEnabled(true);
+        buttonSearch.setEnabled(true);
     }
     
     public void setEnableResetButton(){
-        clearButton.setEnabled(true);
+        buttonClear.setEnabled(true);
     }
     
     public void setEnableKeywordLoadButton() {
-        keywordLoadButton.setEnabled(true);
+        buttonKeywordLoad.setEnabled(true);
     }
     
     public void setEnableKeywordSaveButton() {
-        keywordSaveButton.setEnabled(true);
+        buttonKeywordSave.setEnabled(true);
     }
     
     public void setContentsArea(String text) {

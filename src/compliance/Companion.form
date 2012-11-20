@@ -9,7 +9,7 @@
             <Property name="text" type="java.lang.String" value="&#xd30c;&#xc77c;"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="exitMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemExit">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+X"/>
@@ -17,7 +17,7 @@
                 <Property name="text" type="java.lang.String" value="Exit"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemExitActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -27,52 +27,52 @@
             <Property name="text" type="java.lang.String" value="&#xc218;&#xc9d1;"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="makeCaseMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemMakeCase">
               <Properties>
                 <Property name="text" type="java.lang.String" value="New"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="makeCaseMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemMakeCaseActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="openCaseMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemOpenCase">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Open"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openCaseMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemOpenCaseActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="analyzeMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemAnalyze">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Analyze"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="analyzeMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemAnalyzeActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="copyMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemCopy">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Copy"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="copyMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemCopyActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="indexingMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemIndexing">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Index"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="indexingMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemIndexingActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="resetCaseMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemResetCase">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Reset"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resetCaseMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemResetCaseActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -82,7 +82,7 @@
             <Property name="text" type="java.lang.String" value="&#xac80;&#xc0c9;"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="openIndexMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemOpenIndex">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+O"/>
@@ -90,10 +90,10 @@
                 <Property name="text" type="java.lang.String" value="Open Index"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="openIndexMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemOpenIndexActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="searchMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemSearch">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+G"/>
@@ -101,10 +101,10 @@
                 <Property name="text" type="java.lang.String" value="Search"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemSearchActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="clearMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemClear">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Shift+C"/>
@@ -113,7 +113,7 @@
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemClearActionPerformed"/>
               </Events>
             </MenuItem>
             <Menu class="javax.swing.JMenu" name="jMenu4">
@@ -121,7 +121,7 @@
                 <Property name="text" type="java.lang.String" value="Keyword"/>
               </Properties>
               <SubComponents>
-                <MenuItem class="javax.swing.JMenuItem" name="keywordLoadMenuItem">
+                <MenuItem class="javax.swing.JMenuItem" name="menuItemKeywordLoad">
                   <Properties>
                     <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                       <KeyStroke key="Ctrl+L"/>
@@ -129,10 +129,10 @@
                     <Property name="text" type="java.lang.String" value="Load"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="keywordLoadMenuItemActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemKeywordLoadActionPerformed"/>
                   </Events>
                 </MenuItem>
-                <MenuItem class="javax.swing.JMenuItem" name="keywordSaveMenuItem">
+                <MenuItem class="javax.swing.JMenuItem" name="menuItemKeywordSave">
                   <Properties>
                     <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                       <KeyStroke key="Ctrl+S"/>
@@ -140,7 +140,7 @@
                     <Property name="text" type="java.lang.String" value="Save As"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="keywordSaveMenuItemActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemKeywordSaveActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>
@@ -152,7 +152,7 @@
             <Property name="text" type="java.lang.String" value="&#xb3c4;&#xc6c0;&#xb9d0;"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="howToUseMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemHowToUse">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+H"/>
@@ -160,12 +160,12 @@
                 <Property name="text" type="java.lang.String" value="How to use"/>
               </Properties>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="menuItemAbout">
               <Properties>
                 <Property name="text" type="java.lang.String" value="About"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboutMenuItemActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItemAboutActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -255,19 +255,19 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jSP2s" max="32767" attributes="0"/>
                               <Group type="102" attributes="0">
-                                  <Component id="searchButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonSearch" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="clearButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonClear" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
-                                  <Component id="indexOpenButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonOpenIndex" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
                                   <Component id="jLabel2s" min="-2" pref="59" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="jLabel4s" min="-2" pref="382" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="keywordLoadButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonKeywordLoad" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="keywordSaveButton" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonKeywordSave" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace pref="53" max="32767" attributes="0"/>
                                   <Component id="indexInfoLabel" min="-2" pref="316" max="-2" attributes="0"/>
                               </Group>
@@ -285,12 +285,12 @@
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="jLabel2s" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="searchButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonSearch" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel4s" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="indexOpenButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="clearButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="keywordLoadButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="keywordSaveButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonOpenIndex" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonClear" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonKeywordLoad" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonKeywordSave" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
@@ -325,7 +325,7 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Component class="javax.swing.JButton" name="searchButton">
+                <Component class="javax.swing.JButton" name="buttonSearch">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
@@ -334,7 +334,7 @@
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchButtonActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonSearchActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JLabel" name="indexInfoLabel">
@@ -361,7 +361,7 @@
                     <Property name="text" type="java.lang.String" value="(&#xc608;) &#xd569;&#xc758; &#xd68c;&#xc758; &#xac00;&#xaca9; &#xc778;&#xc0c1; &#xc800;&#xc9c0; +&#xd544;&#xc218;&#xb2e8;&#xc5b4; -&#xc81c;&#xc678;&#xb2e8;&#xc5b4; &#xd544;&#xb4dc;&#xc774;&#xb984;:&#xac80;&#xc0c9;&#xc5b4;"/>
                   </Properties>
                 </Component>
-                <Component class="javax.swing.JButton" name="clearButton">
+                <Component class="javax.swing.JButton" name="buttonClear">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
@@ -370,21 +370,21 @@
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearButtonActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonClearActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="indexOpenButton">
+                <Component class="javax.swing.JButton" name="buttonOpenIndex">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
                     </Property>
-                    <Property name="text" type="java.lang.String" value="Index Open"/>
+                    <Property name="text" type="java.lang.String" value="Open Index"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="indexOpenButtonActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonOpenIndexActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="keywordLoadButton">
+                <Component class="javax.swing.JButton" name="buttonKeywordLoad">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
@@ -393,10 +393,10 @@
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="keywordLoadButtonActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonKeywordLoadActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="keywordSaveButton">
+                <Component class="javax.swing.JButton" name="buttonKeywordSave">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
@@ -405,7 +405,7 @@
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="keywordSaveButtonActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonKeywordSaveActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>
@@ -514,13 +514,13 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                                      <Component id="firstButton" min="-2" pref="32" max="-2" attributes="0"/>
+                                      <Component id="buttonFirst" min="-2" pref="32" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="beforeButton" min="-2" pref="32" max="-2" attributes="0"/>
+                                      <Component id="buttonBefore" min="-2" pref="32" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="nextButton" min="-2" pref="32" max="-2" attributes="0"/>
+                                      <Component id="buttonNext" min="-2" pref="32" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                      <Component id="lastButton" min="-2" pref="32" max="-2" attributes="0"/>
+                                      <Component id="buttonLast" min="-2" pref="32" max="-2" attributes="0"/>
                                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                       <Component id="pageText" min="-2" pref="32" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
@@ -532,11 +532,11 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="32767" attributes="0"/>
                                       <Group type="103" groupAlignment="1" attributes="0">
-                                          <Component id="firstButton" min="-2" pref="32" max="-2" attributes="0"/>
+                                          <Component id="buttonFirst" min="-2" pref="32" max="-2" attributes="0"/>
                                           <Component id="pageText" min="-2" pref="32" max="-2" attributes="0"/>
-                                          <Component id="lastButton" min="-2" pref="32" max="-2" attributes="0"/>
-                                          <Component id="nextButton" min="-2" pref="32" max="-2" attributes="0"/>
-                                          <Component id="beforeButton" min="-2" pref="32" max="-2" attributes="0"/>
+                                          <Component id="buttonLast" min="-2" pref="32" max="-2" attributes="0"/>
+                                          <Component id="buttonNext" min="-2" pref="32" max="-2" attributes="0"/>
+                                          <Component id="buttonBefore" min="-2" pref="32" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -544,7 +544,7 @@
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
-                            <Component class="javax.swing.JButton" name="firstButton">
+                            <Component class="javax.swing.JButton" name="buttonFirst">
                               <Properties>
                                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                   <Image iconType="3" name="/compliance/images/first.jpg"/>
@@ -562,10 +562,10 @@
                                 </Property>
                               </Properties>
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="firstButtonActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonFirstActionPerformed"/>
                               </Events>
                             </Component>
-                            <Component class="javax.swing.JButton" name="beforeButton">
+                            <Component class="javax.swing.JButton" name="buttonBefore">
                               <Properties>
                                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                   <Image iconType="3" name="/compliance/images/back.jpg"/>
@@ -589,10 +589,10 @@
                                 </Property>
                               </Properties>
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="beforeButtonActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonBeforeActionPerformed"/>
                               </Events>
                             </Component>
-                            <Component class="javax.swing.JButton" name="nextButton">
+                            <Component class="javax.swing.JButton" name="buttonNext">
                               <Properties>
                                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                   <Image iconType="3" name="/compliance/images/foward.jpg"/>
@@ -610,10 +610,10 @@
                                 </Property>
                               </Properties>
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nextButtonActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonNextActionPerformed"/>
                               </Events>
                             </Component>
-                            <Component class="javax.swing.JButton" name="lastButton">
+                            <Component class="javax.swing.JButton" name="buttonLast">
                               <Properties>
                                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                   <Image iconType="3" name="/compliance/images/last.jpg"/>
@@ -631,7 +631,7 @@
                                 </Property>
                               </Properties>
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lastButtonActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonLastActionPerformed"/>
                               </Events>
                             </Component>
                             <Component class="javax.swing.JTextField" name="pageText">
@@ -1160,15 +1160,204 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="1246" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jTabbedPane1" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <EmptySpace min="0" pref="869" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jTabbedPane1" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
               </Group>
             </DimensionLayout>
           </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel7">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="&#xae30;&#xbcf8; &#xc815;&#xbcf4;">
+                        <Property name="tabTitle" type="java.lang.String" value="&#xae30;&#xbcf8; &#xc815;&#xbcf4;"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane5" pref="1193" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane5" pref="800" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JScrollPane" name="jScrollPane5">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JEditorPane" name="advisorBasic">
+                          <Properties>
+                            <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel8">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="&#xbb38;&#xc11c;&#xc218;&#xc9d1; &#xbc29;&#xbc95;">
+                        <Property name="tabTitle" type="java.lang.String" value="&#xbb38;&#xc11c;&#xc218;&#xc9d1; &#xbc29;&#xbc95;"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane6" pref="1193" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane6" pref="800" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JScrollPane" name="jScrollPane6">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JEditorPane" name="advisorCollect">
+                          <Properties>
+                            <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel9">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="&#xd14d;&#xc2a4;&#xd2b8;&#xac80;&#xc0c9; &#xbc29;&#xbc95;">
+                        <Property name="tabTitle" type="java.lang.String" value="&#xd14d;&#xc2a4;&#xd2b8;&#xac80;&#xc0c9; &#xbc29;&#xbc95;"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane7" pref="1193" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane7" pref="800" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JScrollPane" name="jScrollPane7">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JEditorPane" name="advisorSearch">
+                          <Properties>
+                            <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel10">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                      <JTabbedPaneConstraints tabName="&#xc9c8;&#xc758;&#xc5b4; &#xbb38;&#xbc95;">
+                        <Property name="tabTitle" type="java.lang.String" value="&#xc9c8;&#xc758;&#xc5b4; &#xbb38;&#xbc95;"/>
+                      </JTabbedPaneConstraints>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane8" pref="1193" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane8" pref="800" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JScrollPane" name="jScrollPane8">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JEditorPane" name="advisorQuerySyntax">
+                          <Properties>
+                            <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
+                            <Property name="toolTipText" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
         </Container>
       </SubComponents>
     </Container>
