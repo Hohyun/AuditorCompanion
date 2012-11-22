@@ -7,11 +7,13 @@ package compliance;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
 import org.apache.lucene.analysis.kr.KoreanAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -21,6 +23,15 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.highlight.Fragmenter;
+import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
+import org.apache.lucene.search.highlight.QueryScorer;
+import org.apache.lucene.search.highlight.SimpleFragmenter;
+import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
+import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
+import org.apache.lucene.search.highlight.TextFragment;
+import org.apache.lucene.search.highlight.TokenSources;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
@@ -40,6 +51,13 @@ public class Searcher {
     private Analyzer analyzer;
     private TopDocs topDocs;
     private Query query;
+    private SimpleHTMLFormatter formatter;
+    private QueryScorer queryScorer;
+    private Highlighter highlighter;
+    private final int FRAGMENT_SIZE = 50;
+    private final int MAX_FRAGMENT_COUNT = 10000;
+    private final String htmlHeader = "<html><head></head><body>";
+    private final String htmlFooter = "</body></html>";
     
     public Searcher(Companion companion) {
         this.companion = companion;
@@ -54,10 +72,17 @@ public class Searcher {
             System.out.println(ex);
             JOptionPane.showMessageDialog(companion, "질의어를 해석할 수 없습니다\n질의어를 다시 확인해 주세요.",
                     "질의어 해석 오류", JOptionPane.ERROR_MESSAGE);
-
             return;
         }
 
+        formatter = new SimpleHTMLFormatter("<b>", "</b>");
+        queryScorer = new QueryScorer(query);
+        highlighter = new Highlighter(formatter, queryScorer);
+        //highlighter = new Highlighter(queryScorer);
+        highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, FRAGMENT_SIZE));
+        //highlighter.setTextFragmenter(new SimpleFragmenter(FRAGMENT_SIZE));
+        highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
+            
         try {
             topDocs = indexSearcher.search(query, page.getEnd());
         } catch (IOException ex) {
@@ -111,8 +136,48 @@ public class Searcher {
             Companion.logger.log(Level.SEVERE, e.getMessage());
         }
     }
+
+    public String getHighlightedText(int docId, String fieldName, Document doc) throws IOException {
+
+        TokenStream stream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
+        QueryScorer scorer = new QueryScorer(query, fieldName);
+        Fragmenter fragmenter = new SimpleFragmenter(FRAGMENT_SIZE);
+        highlighter = new Highlighter(scorer);
+        highlighter.setTextFragmenter(fragmenter);
+        highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
+
+        String[] fragments = null;
+        try {
+            fragments = highlighter.getBestFragments(stream, doc.get(fieldName), MAX_FRAGMENT_COUNT);
+        } catch (InvalidTokenOffsetsException ex) {
+            System.out.println(ex);
+        }
+        String highlighted = "";
+            for (String frag : fragments) {
+                highlighted += frag;
+            }
+        return highlighted.replaceAll("\n", "<br/>");
+    }    
+     
+    public TextFragment[] getHighlightedFragments(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {			    
+	    TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
+	    return highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
+	}
     
-     public void setIndexDir(String dir) {
+    public String getHighlightedFragmentsText(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
+        TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
+        TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
+        StringBuilder sb = new StringBuilder();
+	for (int i = 0; i < frags.length; i++) {
+           if ((frags[i] != null) && (frags[i].getScore() > 0)) {
+               sb.append(frags[i].toString()).append("...\n\n");
+               //System.out.println(frags[i].toString() + " ...\n\n");
+           }
+       }
+        return sb.toString().replaceAll("\n", "<br/>");
+    }
+               
+    public void setIndexDir(String dir) {
         indexDir = dir;
     }
     
@@ -157,31 +222,28 @@ public class Searcher {
         }
         int id = (int) model.getValueAt(row, 0);
         ScoreDoc scoreDoc = topDocs.scoreDocs[id - 1];
-        Document d;
+        Document doc;
         try {
-            d = indexSearcher.doc(scoreDoc.doc);
-            String contents = d.get("contents");
-            String[] fragments = MyUtil.getFragmentsWithHighlightedTerms(analyzer, query, "contents", contents, 100, 100);
-            String highlighted = "";
-            for (String frag : fragments) {
-                highlighted += frag;
-            }
-            companion.setContentsArea(highlighted.replaceAll("\n", "<br/>"));
+            doc = indexSearcher.doc(scoreDoc.doc);
+            String highlighted = getHighlightedText(scoreDoc.doc, "contents", doc);
+            String highlightedFragments = getHighlightedFragmentsText(scoreDoc.doc, "contents", doc);
+            companion.setContentsArea(highlightedFragments + "<hr/>" + highlighted);
+            
             // Metadata
             String metaString = "";
-            String fullFileName = d.get("full-file-name");
-            String appName = d.get("application-name");
-            String fileSize = d.get("file-size");
-            String pageCount = d.get("page-count");
-            String md5origin = d.get("md5");
-            File currentFile = new File(new File(indexDir, d.get("path")),
-                    d.get("file-name"));
+            String fullFileName = doc.get("full-file-name");
+            String appName = doc.get("application-name");
+            String fileSize = doc.get("file-size");
+            String pageCount = doc.get("page-count");
+            String md5origin = doc.get("md5");
+            File currentFile = new File(new File(indexDir, doc.get("path")),
+                    doc.get("file-name"));
             String md5current = MyUtil.getHashCode(currentFile);
 
-            String author = d.get("author");
-            String creationDate = d.get("creation-date");
-            String lastAuthor = d.get("last-author");
-            String lastModified = d.get("last-modified");
+            String author = doc.get("author");
+            String creationDate = doc.get("creation-date");
+            String lastAuthor = doc.get("last-author");
+            String lastModified = doc.get("last-modified");
 
             metaString += String.format("<ul><li>파일 경로 : %s</li>", fullFileName);
             metaString += String.format("    <li>작성 프로그램: %s</li>", appName);
@@ -200,6 +262,8 @@ public class Searcher {
             metaString += String.format("    <li>파일 생성일: %s</li>", creationDate);
             metaString += String.format("    <li><font color=\"red\">최종 수정일: %s</li></font></ul>", lastModified);
             companion.setMetadataArea(metaString);
+        } catch (InvalidTokenOffsetsException ex) {
+            Logger.getLogger(Searcher.class.getName()).log(Level.SEVERE, null, ex);
         } catch (CorruptIndexException ex) {
             System.out.println(ex);
             Companion.logger.log(Level.SEVERE, ex.getMessage());
