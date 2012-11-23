@@ -1,0 +1,53 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>문서 수집 사용법 (Collector)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>문서 수집 (Collector) 사용법</h1>
+
+        <h2>■ Collector Tab 선택</h2>
+        <ul><li>Stage : BEFORE_STARTED (우하단에 표시됨)</li></ul>
+
+        <h2>가. Case 만들기</h2>
+        <ul><li>New 버튼을 눌러 Case 등록</li>
+            <li>Case Name 입력, Auditor Name 입력, 언어 선택<br>
+                - 언어 : 인덱스 생성 및 검색시 사용할 분석기 선택 용도<br>
+                - Case Directory에 동 정보를 담은 Case 파일 (확장명 case)이 생성됨</li>
+            <li>성공적으로 등록되면 화면에 Case 명과 Case Directory가 표시됨</li>
+            <li>Stage: CASE_CREATED</li></ul>
+
+        <h2>나. 파일 검색</h2>
+        <ul><li>좌측 트리에서 검색할 위치, 검색한 파일종류를 선택</li>
+            <li>Analyze 버튼은 눌러 검색 수행</li>
+            <li>화면에 검색결과가 나타나며, Case Directory에 FileList.txt가 생성됨</li>
+            <li>Stage: ANALYZE_COMPLETED</li></ul>
+
+        <h2>다. 복사</h2>
+        <ul><li>화면에서 복사를 원하는 파일 선택</li>
+            <li>Checkbox 이용 건별 선택, Shift 키를 이용한 다중 선택 가능</li>
+            <li>Copy 버튼을 누르면, Case_Dir\Files에 해당 파일이 복사됨</li>
+            <li>Stage: COPY_COMPLETED</li></ul>
+
+        <h2>라. Index 만들기</h2>
+
+        <h3>&nbsp;&nbsp;&nbsp;1) 복사 후 (다 단계 수행 후) 인덱스를 만드는 경우</h3>
+        <ul><li>Index 버튼을 누르면 Case_Dir\Files의 파일 전체에 대해 텍스트를 추출하여 인덱스 생성</li>
+            <li>인덱스 생성위치: Case_Dir\Index</li>
+            <li>Stage : INDEX_CREATED</li></ul>
+
+        <h3>&nbsp;&nbsp;&nbsp;2) 복사 없이 (나 단계 수행 후) 인덱스를 만드는 경우</h3>
+        <ul><li>Index 버튼을 누르면 화면에 선택된 파일에 대해 텍스트를 추출하여 인덱스 생성</li>
+            <li>인덱스 생성위치: Case_Dir\Index</li>
+            <li>Stage : INDEX_CREATED</li></ul>
+
+        <h2>마. Open Case</h2>
+        <ul><li>나 단계까지 수행 후 중단했다가, 생성된 Case 파일을 열어	추후 다,라 단계 수행가능</li>
+            <li>Stage : CASE_LOADED</li></ul>
+    </body>
+</html>

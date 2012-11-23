@@ -11,6 +11,7 @@ import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingListener;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Image;
@@ -27,16 +28,24 @@ import java.util.logging.SimpleFormatter;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.apache.lucene.analysis.Analyzer;
@@ -54,6 +63,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+import sun.swing.table.DefaultTableCellHeaderRenderer;
 /**
  *
  * @author hohkim
@@ -66,15 +76,15 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     //private String queryString;
     private String indexDir;
     private MyTableModel model;
-    //private Analyzer analyzer;
+    //private Scanner analyzer;
     // Collector
     private CheckboxTree folderTree;
     private CheckboxTree fileTypeTree;
     private List<String> categories = Arrays.asList("Office", "Image", "A/V", "ETC"); 
     private List<String> offices = Arrays.asList("DOC","DOCX", "XLS", "XLSX", "PPT", "PPTX", "PDF");
-    private List<String> images = Arrays.asList("JPEG","JPG", "GIF", "PNG", "TIFF"); 
-    private List<String> avfiles = Arrays.asList("MP3","MP4"); 
-    private List<String> etcfiles = Arrays.asList("TXT", "TEX", "CLS");
+    private List<String> images = Arrays.asList("BMP", "GIF", "JPEG","JPG", "PNG", "TIFF"); 
+    private List<String> avfiles = Arrays.asList("AVI", "MP3","MP4", "WAV", "WMV", "WMA"); 
+    private List<String> etcfiles = Arrays.asList("HTML","HTM", "HWP", "MDB", "RTF","TEX","TXT","XML","PST","ZIP");
     private Register register;
     private MyTableData infoData;
     private String caseDir;
@@ -293,6 +303,8 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         contentsArea = new javax.swing.JEditorPane();
+        jScrollPane9 = new javax.swing.JScrollPane();
+        fragmentTable = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         metadataArea = new javax.swing.JEditorPane();
@@ -315,7 +327,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel6 = new javax.swing.JPanel();
         buttonNew = new javax.swing.JButton();
         buttonOpen = new javax.swing.JButton();
-        buttonAnalyze = new javax.swing.JButton();
+        buttonScan = new javax.swing.JButton();
         buttonCopy = new javax.swing.JButton();
         buttonIndex = new javax.swing.JButton();
         buttonReset = new javax.swing.JButton();
@@ -351,7 +363,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         menuItemKeywordLoad = new javax.swing.JMenuItem();
         menuItemKeywordSave = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        menuItemHowToUse = new javax.swing.JMenuItem();
         menuItemAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -657,18 +668,42 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         contentsArea.setContentType("text/html"); // NOI18N
         contentsArea.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
+        contentsArea.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n\n    </p>\r\n  </body>\r\n</html>\r\n");
         jScrollPane3.setViewportView(contentsArea);
+
+        fragmentTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "찾은 글 조각"
+            }
+        ));
+        fragmentTable.setCellSelectionEnabled(true);
+        fragmentTable.setName(""); // NOI18N
+        fragmentTable.setRowHeight(70);
+        fragmentTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fragmentTableMouseClicked(evt);
+            }
+        });
+        jScrollPane9.setViewportView(fragmentTable);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
+                    .addComponent(jScrollPane9))
                 .addContainerGap())
         );
 
@@ -770,6 +805,11 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         etcFileTypes.setColumns(20);
         etcFileTypes.setRows(5);
+        etcFileTypes.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                etcFileTypesFocusLost(evt);
+            }
+        });
         jSPs.setViewportView(etcFileTypes);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -824,10 +864,10 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         });
 
-        buttonAnalyze.setText("Analyze");
-        buttonAnalyze.addActionListener(new java.awt.event.ActionListener() {
+        buttonScan.setText("Scan");
+        buttonScan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonAnalyzeActionPerformed(evt);
+                buttonScanActionPerformed(evt);
             }
         });
 
@@ -857,19 +897,19 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap(149, Short.MAX_VALUE)
+                .addContainerGap(158, Short.MAX_VALUE)
                 .addComponent(buttonNew)
                 .addGap(18, 18, 18)
                 .addComponent(buttonOpen)
                 .addGap(18, 18, 18)
-                .addComponent(buttonAnalyze)
+                .addComponent(buttonScan)
                 .addGap(18, 18, 18)
                 .addComponent(buttonCopy)
                 .addGap(18, 18, 18)
                 .addComponent(buttonIndex)
                 .addGap(18, 18, 18)
                 .addComponent(buttonReset)
-                .addContainerGap(285, Short.MAX_VALUE))
+                .addContainerGap(294, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -878,7 +918,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(buttonNew)
                     .addComponent(buttonOpen)
-                    .addComponent(buttonAnalyze)
+                    .addComponent(buttonScan)
                     .addComponent(buttonCopy)
                     .addComponent(buttonIndex)
                     .addComponent(buttonReset))
@@ -1038,6 +1078,8 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         mainTabbedPane.addTab("Advisor", advisorP);
 
+        mainTabbedPane.setSelectedIndex(2);
+
         jMenu1.setText("파일");
 
         menuItemExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
@@ -1159,10 +1201,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         jMenu3.setText("도움말");
 
-        menuItemHowToUse.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
-        menuItemHowToUse.setText("How to use");
-        jMenu3.add(menuItemHowToUse);
-
         menuItemAbout.setText("About");
         menuItemAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1190,13 +1228,14 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSearchActionPerformed
+        searcher.setPageNo(1);
         searcher.setQueryString(searchWords.getText());
         try {
             searcher.search();
             buttonClear.setEnabled(true);
-            buttonSearch.setEnabled(false);
+            buttonSearch.setEnabled(true);
             buttonOpenIndex.setEnabled(false);
-            buttonKeywordLoad.setEnabled(false);
+            buttonKeywordLoad.setEnabled(true);
             buttonKeywordSave.setEnabled(true);
         } catch (Exception ex) {
             System.out.println(ex);
@@ -1224,6 +1263,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         contentsArea.setText(null);
         metadataArea.setText(null);
         initResultTable();
+        initFragmentTable();
         pageLabel.setText("Page:"); //resultTable 위의 Page표시
         pageText.setText(""); // navigation 버튼 우측의 Page 입력란
         searcher.setPageNo(1);
@@ -1417,7 +1457,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         }        
     }//GEN-LAST:event_buttonOpenActionPerformed
 
-    private void buttonAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAnalyzeActionPerformed
+    private void buttonScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonScanActionPerformed
         // TODO add your handling code here:
         if (caseName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please create \"New case\" before analyzing! ", 
@@ -1432,14 +1472,15 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         }
         //progressBar.setStringPainted(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        compliance.Analyzer analyzer = new compliance.Analyzer(jobDirs, jobFileTypes, caseDir, fileListFile, this);   
+        checkManualFileTypes();
+        compliance.Scanner analyzer = new compliance.Scanner(jobDirs, jobFileTypes, caseDir, fileListFile, this);   
         analyzer.setParent(this);
         //analyzer.addPropertyChangeListener(this);
         analyzer.execute();        
-    }//GEN-LAST:event_buttonAnalyzeActionPerformed
+    }//GEN-LAST:event_buttonScanActionPerformed
 
     private void buttonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
-       setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         model = (MyTableModel) infoTable.getModel();
         Copier copier = new Copier(model, this);
         //copier.addPropertyChangeListener(this);
@@ -1486,7 +1527,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_menuItemOpenCaseActionPerformed
 
     private void menuItemAnalyzeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAnalyzeActionPerformed
-        buttonAnalyzeActionPerformed(evt);
+        buttonScanActionPerformed(evt);
     }//GEN-LAST:event_menuItemAnalyzeActionPerformed
 
     private void menuItemCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCopyActionPerformed
@@ -1510,11 +1551,15 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         dlg.setLocation((this.getWidth()-dlg.getWidth())/2, 
                 (this.getHeight()-dlg.getHeight())/2);
         dlg.setVisible(true);
-        mainTabbedPane.setSelectedIndex(0);
-        try {
-            initLogger(new File(indexDir).getParent());
-        } catch (IOException ex) {
-            Logger.getLogger(Companion.class.getName()).log(Level.SEVERE, null, ex);
+        if (indexDir != null) {
+            mainTabbedPane.setSelectedIndex(0);
+            searchWords.requestFocus();
+            searchWords.setCaretPosition(0);
+            try {
+                initLogger(new File(indexDir).getParent());
+            } catch (IOException ex) {
+                Companion.logger.log(Level.SEVERE, ex.getMessage());
+            }
         }
     }//GEN-LAST:event_buttonOpenIndexActionPerformed
 
@@ -1570,45 +1615,42 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         }                           
     }//GEN-LAST:event_buttonKeywordSaveActionPerformed
+
+    private void etcFileTypesFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_etcFileTypesFocusLost
+        checkTreeNodesAndManualFileTypes();
+    }//GEN-LAST:event_etcFileTypesFocusLost
+
+    private void fragmentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fragmentTableMouseClicked
+        int row = fragmentTable.getSelectedRow();
+        MyTableModel myModel = (MyTableModel)fragmentTable.getModel();
+        
+        HTMLEditorKit htmlKit = new HTMLEditorKit();
+        HTMLDocument htmlFragDoc = (HTMLDocument) htmlKit.createDefaultDocument();
+        HTMLDocument htmlContentsDoc = (HTMLDocument) contentsArea.getDocument();
+        String searchText = "";
+        String contentsText = "";
+        try {
+            String fragSource = (String) myModel.getValueAt(row, 0);
+            fragSource = fragSource.replaceAll("\n", "<br>");
+            htmlKit.read(new StringReader(fragSource), htmlFragDoc, 0);
+            searchText = htmlFragDoc.getText(0, htmlFragDoc.getLength()).trim();
+            contentsText = htmlContentsDoc.getText(0, htmlContentsDoc.getLength());
+        } catch (BadLocationException | IOException ex) {
+            Companion.logger.log(Level.SEVERE, ex.getMessage());
+        } 
+        
+        int pos = contentsText.indexOf(searchText);      
+        if (pos > 0) {
+            contentsArea.requestFocus();
+            contentsArea.setCaretPosition(pos);  
+            contentsArea.setSelectionStart(pos);
+            contentsArea.setSelectionEnd(pos + searchText.length());
+        }
+    }//GEN-LAST:event_fragmentTableMouseClicked
     
     @Override
     public void valueChanged(TreeCheckingEvent e) {
-        jobDirs.clear();
-        jobFileTypes.clear();
-//        if ( e.getSource() == fileTypeTree ) {
-//            System.out.println("fileTypeTree clicked");
-//        }      
-        TreePath[] folderNodes = folderTree.getCheckingPaths();
-        TreePath[] fileTypeNodes = fileTypeTree.getCheckingPaths();
-        if (folderNodes == null || fileTypeNodes == null) {
-            return;
-        }    
-        System.out.print("\n");
-             
-        for (TreePath node : folderNodes) {
-            String pathString = "";
-            for (int i = 1; i < node.getPath().length; i++) {
-                pathString += node.getPath()[i].toString();
-            }
-            jobDirs.add(pathString);
-        }
-        for (TreePath node: fileTypeNodes) {
-            if (node.getPathCount()>2) {
-                jobFileTypes.add(node.getLastPathComponent().toString());
-            }
-        } 
-        Collections.sort(jobDirs);
-        Collections.sort(jobFileTypes);
-        if (stage == Stage.ANALYZE_COMPLETED || stage == Stage.CASE_LOADED 
-                || stage == Stage.COPY_COMPLETED) {
-            try {
-                updateInfoTable(jobFileTypes);       
-            } catch (IOException evt) {
-                System.out.println(evt.getMessage());
-            }
-        } 
-        // System.out.println(jobDirs);
-        // System.out.println(jobFileTypes);
+        checkTreeNodesAndManualFileTypes();
     }
     
     @Override
@@ -1625,8 +1667,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         for (int row: selected_rows) {       
            boolean onOff = (Boolean) model.getValueAt(row, 0);
            model.setValueAt(!onOff, row, 0);
-           //String fn = model.getValueAt(row, 1).toString();
-           //System.out.println(fn);
         }
     }
  
@@ -1660,17 +1700,12 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-               // try {
-                    //Searcher indexSearcher = new Companion("F:\\Binder\\Index", DocLang.Korean);
                     Companion searcher = new Companion();
                     Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
                             .getResource("/compliance/images/search1.jpg"));
                     searcher.setIconImage(icon);
                     searcher.initResultTable();
                     searcher.setVisible(true);
-               // } catch (IOException ex) {
-               //     System.out.println(ex);
-               // }
             }
         });
     }
@@ -1681,7 +1716,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     private javax.swing.JEditorPane advisorQuerySyntax;
     private javax.swing.JEditorPane advisorSearch;
     private javax.swing.JPanel bottomP;
-    private javax.swing.JButton buttonAnalyze;
     private javax.swing.JButton buttonBefore;
     private javax.swing.JButton buttonClear;
     private javax.swing.JButton buttonCopy;
@@ -1695,10 +1729,12 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     private javax.swing.JButton buttonOpen;
     private javax.swing.JButton buttonOpenIndex;
     private javax.swing.JButton buttonReset;
+    private javax.swing.JButton buttonScan;
     private javax.swing.JButton buttonSearch;
     private javax.swing.JPanel collectorP;
     private javax.swing.JEditorPane contentsArea;
     private javax.swing.JTextArea etcFileTypes;
+    private javax.swing.JTable fragmentTable;
     private javax.swing.JSplitPane hSP1s;
     private javax.swing.JSplitPane hSplitPane;
     private javax.swing.JLabel indexInfoLabel;
@@ -1731,6 +1767,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblCase;
     private javax.swing.JLabel lblStage;
@@ -1742,7 +1779,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     private javax.swing.JMenuItem menuItemClear;
     private javax.swing.JMenuItem menuItemCopy;
     private javax.swing.JMenuItem menuItemExit;
-    private javax.swing.JMenuItem menuItemHowToUse;
     private javax.swing.JMenuItem menuItemIndexing;
     private javax.swing.JMenuItem menuItemKeywordLoad;
     private javax.swing.JMenuItem menuItemKeywordSave;
@@ -1782,6 +1818,13 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         resultTableColumnWidthAdjust();
     }
    
+    public void initFragmentTable() {
+        Object[][] data = {{""}};
+        String[] columnNames = {"찾은 글 조각" };
+        model = new MyTableModel(data, columnNames);
+        fragmentTable.setModel(model);
+    }
+    
     public void setNavigateButtonsState() {
         int curPage = searcher.page.getCurrentPageNo();
         int totalPage = searcher.page.getPageCount();
@@ -1927,6 +1970,10 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         return stage;
     }
            
+    public void setFragmentTable(MyTableModel model) {
+        fragmentTable.setModel(model);
+    }
+    
     public void setInfoDataAndHeader (Object[][] data, String[] header) {
         infoData.setData(data);
         infoData.setHeader(header);
@@ -1989,9 +2036,9 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             buttonOpen.setEnabled(false); 
         }               
         if (b3 == true) { 
-            buttonAnalyze.setEnabled(true);
+            buttonScan.setEnabled(true);
         } else { 
-            buttonAnalyze.setEnabled(false); 
+            buttonScan.setEnabled(false); 
         }
         if (b4 == true) { 
             buttonCopy.setEnabled(true);
@@ -2049,6 +2096,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }
     
     public void setContentsArea(String text) {
+        //contentsArea.setContentType("text/html");
         contentsArea.setText(text);
     }
     
@@ -2065,5 +2113,58 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         resultTable.getColumnModel().getColumn(1).setPreferredWidth(160);
         resultTable.getColumnModel().getColumn(2).setPreferredWidth(250);
     }
-   
+    
+    public void checkManualFileTypes() {
+        if ("".equals(etcFileTypes.getText())) {
+            return;
+        }
+        String[] types = etcFileTypes.getText().split("\\s");
+        for (String type : types) {
+            if (!jobFileTypes.contains(type)) {
+                jobFileTypes.add(type);
+            }
+        }                
+    }
+    
+    public void checkTreeNodesAndManualFileTypes() {
+        jobDirs.clear();
+        jobFileTypes.clear();    
+        TreePath[] folderNodes = folderTree.getCheckingPaths();
+        TreePath[] fileTypeNodes = fileTypeTree.getCheckingPaths();
+        if (folderNodes == null || fileTypeNodes == null) {
+            return;
+        }    
+ 
+        for (TreePath node : folderNodes) {
+            String pathString = "";
+            for (int i = 1; i < node.getPath().length; i++) {
+                pathString += node.getPath()[i].toString();
+            }
+            jobDirs.add(pathString);
+        }
+        for (TreePath node: fileTypeNodes) {
+            if (node.getPathCount()>2) {
+                jobFileTypes.add(node.getLastPathComponent().toString());
+            }
+        } 
+        Collections.sort(jobDirs);
+        checkManualFileTypes();
+        Collections.sort(jobFileTypes);
+        if (stage == Stage.ANALYZE_COMPLETED || stage == Stage.CASE_LOADED 
+                || stage == Stage.COPY_COMPLETED) {
+            try {
+                updateInfoTable(jobFileTypes);       
+            } catch (IOException evt) {
+                System.out.println(evt.getMessage());
+            }
+        }         
+    }
+    
+    public void setFragmentTableRenderer() {
+        DefaultTableCellRenderer renderer = new DefaultTableCellHeaderRenderer();
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        renderer.setVerticalAlignment(SwingConstants.TOP);
+        fragmentTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+    }
+ 
 }

@@ -16,6 +16,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexNotFoundException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -55,13 +56,24 @@ public class Searcher {
     private QueryScorer queryScorer;
     private Highlighter highlighter;
     private final int FRAGMENT_SIZE = 50;
-    private final int MAX_FRAGMENT_COUNT = 10000;
-    private final String htmlHeader = "<html><head></head><body>";
+    private final int MAX_FRAGMENT_COUNT = 100;
+    private final String htmlHeader = "<html><head><style>b {color:black; font-weight:bold; background-color:yellow}</style></head><body>";
     private final String htmlFooter = "</body></html>";
     
     public Searcher(Companion companion) {
         this.companion = companion;
         page = new Page(1);
+    }
+ 
+    public void initSearcher() {
+        try {
+            reader = IndexReader.open(FSDirectory.open(new File(this.indexDir)));
+            indexSearcher = new IndexSearcher(reader);
+        } catch (IndexNotFoundException e) {
+            Companion.logger.log(Level.SEVERE, e.getMessage());
+        } catch (IOException e) {
+            Companion.logger.log(Level.SEVERE, e.getMessage());
+        }
     }
     
     public void search() throws IOException {
@@ -78,9 +90,7 @@ public class Searcher {
         formatter = new SimpleHTMLFormatter("<b>", "</b>");
         queryScorer = new QueryScorer(query);
         highlighter = new Highlighter(formatter, queryScorer);
-        //highlighter = new Highlighter(queryScorer);
         highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, FRAGMENT_SIZE));
-        //highlighter.setTextFragmenter(new SimpleFragmenter(FRAGMENT_SIZE));
         highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
             
         try {
@@ -89,10 +99,7 @@ public class Searcher {
             System.out.println(ex);
             return;
         }
-        page.setTotalCount(topDocs.totalHits);
-//        System.out.format("Total hits: %d, Total Page: %d\n",
-//                topDocs.totalHits, page.getPageCount());
-        
+        page.setTotalCount(topDocs.totalHits);       
         if (topDocs.totalHits == 0) {
             companion.setPageLabel("Page: 0/0, (Total Hits: 0)");
             companion.initResultTable();
@@ -101,7 +108,6 @@ public class Searcher {
             return;
         }
 
-//        System.out.println("Current page: " + page.getCurrentPageNo());
         // for tablemodel
         int rowCount = (int) Math.min(page.getPageSize(),
                 (page.getTotalCount() - (page.getCurrentPageNo() - 1) * page.getPageSize()));
@@ -127,36 +133,23 @@ public class Searcher {
         companion.setNavigateButtonsState();
     }
 
-    public void initSearcher() {
-        try {
-            reader = IndexReader.open(FSDirectory.open(new File(this.indexDir)));
-            indexSearcher = new IndexSearcher(reader);
-        } catch (IOException e) {
-            System.out.println(e);
-            Companion.logger.log(Level.SEVERE, e.getMessage());
-        }
-    }
-
     public String getHighlightedText(int docId, String fieldName, Document doc) throws IOException {
-
         TokenStream stream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
         QueryScorer scorer = new QueryScorer(query, fieldName);
-        Fragmenter fragmenter = new SimpleFragmenter(FRAGMENT_SIZE);
-        highlighter = new Highlighter(scorer);
+        // fragment의 size를 내용전체 크기와 같게 하여 1개로 잘리게 한다.
+        Fragmenter fragmenter = new SimpleFragmenter(doc.get("contents").length());
+        highlighter = new Highlighter(formatter, scorer);
         highlighter.setTextFragmenter(fragmenter);
         highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
-
-        String[] fragments = null;
-        try {
-            fragments = highlighter.getBestFragments(stream, doc.get(fieldName), MAX_FRAGMENT_COUNT);
-        } catch (InvalidTokenOffsetsException ex) {
-            System.out.println(ex);
-        }
         String highlighted = "";
-            for (String frag : fragments) {
-                highlighted += frag;
-            }
-        return highlighted.replaceAll("\n", "<br/>");
+        try {
+            // 한개로 잘렸으므로 세번째 인수 fragment 갯수를 어떻게 주더라도, 내부의 모든 일치단어가 highlight 된다.
+            highlighted = highlighter.getBestFragments(stream, doc.get("contents"), 1, "...");
+            highlighted = htmlHeader + highlighted + htmlFooter;
+        } catch (InvalidTokenOffsetsException ex) {
+            Companion.logger.log(Level.SEVERE, ex.getMessage());
+        }
+        return highlighted.replaceAll("\n", "<br>");
     }    
      
     public TextFragment[] getHighlightedFragments(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {			    
@@ -164,58 +157,54 @@ public class Searcher {
 	    return highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
 	}
     
-    public String getHighlightedFragmentsText(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
+    public MyTableModel getModelForFragment(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
+        String[] columnNames = {"찾은 글 조각"};
+        int rowCount = 0;
+  
         TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
-        TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
-        StringBuilder sb = new StringBuilder();
+        QueryScorer scorer = new QueryScorer(query, fieldName);
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, FRAGMENT_SIZE);
+        highlighter = new Highlighter(formatter, scorer);
+        highlighter.setTextFragmenter(fragmenter);
+        highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
+                
+        TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);     
 	for (int i = 0; i < frags.length; i++) {
            if ((frags[i] != null) && (frags[i].getScore() > 0)) {
-               sb.append(frags[i].toString()).append("...\n\n");
-               //System.out.println(frags[i].toString() + " ...\n\n");
+                 rowCount++;
            }
-       }
-        return sb.toString().replaceAll("\n", "<br/>");
+        }
+        Object[][] data = new Object[rowCount][1]; 
+        for (int i = 0; i < frags.length; i++) {
+           if ((frags[i] != null) && (frags[i].getScore() > 0)) {
+                 data[i][0] = htmlHeader + frags[i].toString() + htmlFooter;
+           }
+        }
+        MyTableModel model1 = new MyTableModel(data, columnNames);
+        return model1;
+    }
+    
+    public String getHighlightedFragmentsText(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
+        TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
+        QueryScorer scorer = new QueryScorer(query, fieldName);
+//        Fragmenter fragmenter = new SimpleFragmenter(FRAGMENT_SIZE);
+        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, FRAGMENT_SIZE);
+        highlighter = new Highlighter(formatter, scorer);
+        highlighter.setTextFragmenter(fragmenter);
+        highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
+                
+        TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
+        StringBuilder sb = new StringBuilder();
+        
+	for (int i = 0; i < frags.length; i++) {
+           if ((frags[i] != null) && (frags[i].getScore() > 0)) {
+               sb.append(frags[i].toString()).append("...<hr>");
+           }
+       }      
+       String highlighted = htmlHeader + sb.toString() + htmlFooter;
+       return highlighted.replaceAll("\n", "<br>");
     }
                
-    public void setIndexDir(String dir) {
-        indexDir = dir;
-    }
-    
-    public String getIndexDir() {
-        return indexDir;
-    }
-    
-    public void setPageSize(int pageSize) {
-        page.setPageSize(pageSize);
-    }
-
-    public void setAnalyzer (String language) {
-        try {
-            switch (language) {
-                case "Korean":
-                    analyzer = new KoreanAnalyzer(Version.LUCENE_36);
-                    break;
-                case "English":
-                    analyzer = new StandardAnalyzer(Version.LUCENE_36);
-                    break;
-                case "Japanese":
-                    analyzer = new JapaneseAnalyzer(Version.LUCENE_36);
-                    break;
-            }
-        } catch (IOException e) {
-            System.out.println(e);
-            Companion.logger.log(Level.SEVERE, e.getMessage());
-        }
-    }
-    
-    public void setQueryString(String queryString) {
-        this.queryString = queryString;
-    }
-    
-    public void setPageNo(int pageNo) {
-        page.setCurrentPageNo(pageNo);
-    }
-    
     public void setContentsAndMetaArea(int row) {
         if (model.getValueAt(row, 0) == null) {
             return;
@@ -226,8 +215,9 @@ public class Searcher {
         try {
             doc = indexSearcher.doc(scoreDoc.doc);
             String highlighted = getHighlightedText(scoreDoc.doc, "contents", doc);
-            String highlightedFragments = getHighlightedFragmentsText(scoreDoc.doc, "contents", doc);
-            companion.setContentsArea(highlightedFragments + "<hr/>" + highlighted);
+            companion.setContentsArea(highlighted);
+            companion.setFragmentTable(getModelForFragment(scoreDoc.doc, "contents", doc));
+            //companion.setFragmentTableRenderer();
             
             // Metadata
             String metaString = "";
@@ -273,4 +263,47 @@ public class Searcher {
         }
         companion.setContentsAreaCaretPosition(0);
     }   
+    
+       public void setIndexDir(String dir) {
+        indexDir = dir;
+    }
+    
+    public String getIndexDir() {
+        return indexDir;
+    }
+    
+    public void setPageSize(int pageSize) {
+        page.setPageSize(pageSize);
+    }
+
+    public void setAnalyzer (String language) {
+        try {
+            switch (language) {
+                case "Korean":
+                    analyzer = new KoreanAnalyzer(Version.LUCENE_36);
+                    break;
+                case "English":
+                    analyzer = new StandardAnalyzer(Version.LUCENE_36);
+                    break;
+                case "Japanese":
+                    analyzer = new JapaneseAnalyzer(Version.LUCENE_36);
+                    break;
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+            Companion.logger.log(Level.SEVERE, e.getMessage());
+        }
+    }
+    
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+    
+    public void setPageNo(int pageNo) {
+        page.setCurrentPageNo(pageNo);
+    }
+    
+    public int getFragmentSize() {
+        return FRAGMENT_SIZE;
+    }
 }

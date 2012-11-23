@@ -5,6 +5,7 @@
 package compliance;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -12,13 +13,13 @@ import javax.swing.JFileChooser;
  */
 public class IndexOpenDialog extends javax.swing.JDialog {
 
-    Companion searcher;
+    Companion companion;
     /**
      * Creates new form IndexOpenDialog
      */
     public IndexOpenDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        searcher = (Companion) parent;
+        companion = (Companion) parent;
         initComponents();
     }
 
@@ -149,7 +150,7 @@ public class IndexOpenDialog extends javax.swing.JDialog {
     private void indexBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexBtnActionPerformed
         JFileChooser chooser = new JFileChooser();
         // 나중에 지울 것
-        // chooser.setCurrentDirectory(new java.io.File("F:\\점검\\Index"));
+        chooser.setCurrentDirectory(new java.io.File("F:\\TEST2\\Index"));
         // ----------------------------------
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
@@ -160,23 +161,27 @@ public class IndexOpenDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_indexBtnActionPerformed
 
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
-        String indexDir = indexLbl.getText();
+        String indexDir = indexLbl.getText();    
+        if ("좌측 버튼을 눌러 선택해주세요.".equals(indexLbl.getText())) {
+            this.dispose();
+            return;
+        }
+        
         String language = (String) languageCmb.getSelectedItem();
         String pageSize = (String) pageSizeCmb.getSelectedItem();
 
-        searcher.setIndexDir(indexDir);
-        searcher.setNavigateButtonsDisable();
-        searcher.setEnableSearchButton();
-        searcher.setEnableKeywordLoadButton();
-        searcher.setEnableKeywordSaveButton();
-        searcher.resultTableColumnWidthAdjust();
+        companion.setIndexDir(indexDir);
+        companion.setNavigateButtonsDisable();
+        companion.setEnableSearchButton();
+        companion.setEnableKeywordLoadButton();
+        companion.setEnableKeywordSaveButton();
+        companion.resultTableColumnWidthAdjust();
         
-        searcher.searcher.setIndexDir(indexDir);
-        searcher.searcher.setAnalyzer(language);
-        searcher.searcher.setPageSize(Integer.parseInt(pageSize));
-        searcher.setIndexInfolabel(String.format("%s - (%s Analyzer)", indexDir, language));
-        searcher.searcher.initSearcher();
-
+        companion.searcher.setIndexDir(indexDir);
+        companion.searcher.setAnalyzer(language);
+        companion.searcher.setPageSize(Integer.parseInt(pageSize));
+        companion.setIndexInfolabel(String.format("%s - (%s Analyzer)", indexDir, language));
+        companion.searcher.initSearcher();
         this.dispose();
     }//GEN-LAST:event_okBtnActionPerformed
 

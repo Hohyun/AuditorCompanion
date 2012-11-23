@@ -152,14 +152,6 @@
             <Property name="text" type="java.lang.String" value="&#xb3c4;&#xc6c0;&#xb9d0;"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="menuItemHowToUse">
-              <Properties>
-                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Ctrl+H"/>
-                </Property>
-                <Property name="text" type="java.lang.String" value="How to use"/>
-              </Properties>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemAbout">
               <Properties>
                 <Property name="text" type="java.lang.String" value="About"/>
@@ -214,6 +206,7 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="mainTabbedPane">
       <Properties>
+        <Property name="selectedIndex" type="int" value="2"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
         </Property>
@@ -724,13 +717,20 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jScrollPane3" alignment="0" pref="761" max="32767" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jScrollPane3" pref="493" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="jScrollPane9" min="-2" pref="261" max="-2" attributes="0"/>
+                                  </Group>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="1" attributes="0">
-                                      <Component id="jScrollPane3" pref="675" max="32767" attributes="0"/>
+                                  <Group type="102" attributes="0">
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jScrollPane3" pref="675" max="32767" attributes="0"/>
+                                          <Component id="jScrollPane9" max="32767" attributes="0"/>
+                                      </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
@@ -747,7 +747,32 @@
                                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="0"/>
                                     </Property>
+                                    <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xd;&#xa;  &lt;head&gt;&#xd;&#xa;&#xd;&#xa;  &lt;/head&gt;&#xd;&#xa;  &lt;body&gt;&#xd;&#xa;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#xd;&#xa;&#xa;    &lt;/p&gt;&#xd;&#xa;  &lt;/body&gt;&#xd;&#xa;&lt;/html&gt;&#xd;&#xa;"/>
                                   </Properties>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Container class="javax.swing.JScrollPane" name="jScrollPane9">
+                              <AuxValues>
+                                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                              </AuxValues>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                              <SubComponents>
+                                <Component class="javax.swing.JTable" name="fragmentTable">
+                                  <Properties>
+                                    <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
+                                      <Table columnCount="1" rowCount="0">
+                                        <Column editable="true" title="&#xcc3e;&#xc740; &#xae00; &#xc870;&#xac01;" type="java.lang.Object"/>
+                                      </Table>
+                                    </Property>
+                                    <Property name="cellSelectionEnabled" type="boolean" value="true"/>
+                                    <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                                    <Property name="rowHeight" type="int" value="70"/>
+                                  </Properties>
+                                  <Events>
+                                    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="fragmentTableMouseClicked"/>
+                                  </Events>
                                 </Component>
                               </SubComponents>
                             </Container>
@@ -978,6 +1003,9 @@
                             <Property name="columns" type="int" value="20"/>
                             <Property name="rows" type="int" value="5"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="etcFileTypesFocusLost"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>
@@ -1058,19 +1086,19 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace pref="149" max="32767" attributes="0"/>
+                                  <EmptySpace pref="158" max="32767" attributes="0"/>
                                   <Component id="buttonNew" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="buttonOpen" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="buttonAnalyze" min="-2" max="-2" attributes="0"/>
+                                  <Component id="buttonScan" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="buttonCopy" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="buttonIndex" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="buttonReset" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="285" max="32767" attributes="0"/>
+                                  <EmptySpace pref="294" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1081,7 +1109,7 @@
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="buttonNew" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="buttonOpen" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="buttonAnalyze" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="buttonScan" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="buttonCopy" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="buttonIndex" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="buttonReset" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1108,12 +1136,12 @@
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonOpenActionPerformed"/>
                           </Events>
                         </Component>
-                        <Component class="javax.swing.JButton" name="buttonAnalyze">
+                        <Component class="javax.swing.JButton" name="buttonScan">
                           <Properties>
-                            <Property name="text" type="java.lang.String" value="Analyze"/>
+                            <Property name="text" type="java.lang.String" value="Scan"/>
                           </Properties>
                           <Events>
-                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonAnalyzeActionPerformed"/>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonScanActionPerformed"/>
                           </Events>
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonCopy">

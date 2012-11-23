@@ -15,7 +15,7 @@ import java.util.List;
  * @author hohkim
  */
 public class MyTableData {
-    private String[] header;
+    private String[] header = new String[]{"Select", "File Name", "Size(KB)", "Modified", "Hash Code"};;
     private Object[][] data;
     private int rowCount;
     private int columnCount;
@@ -29,7 +29,7 @@ public class MyTableData {
         rowCount = 0;
         totalSize = 0;
         columnCount = 5;
-        
+                
         // Setting data & count
         try {
             br = new BufferedReader(new FileReader(file));

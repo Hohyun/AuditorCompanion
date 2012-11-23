@@ -4,9 +4,11 @@
  */
 package compliance;
 
-import compliance.AuditCompanion.DocLang;
+import compliance.Companion.DocLang;
+import compliance.Companion.Stage;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
 import javax.swing.SwingWorker;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
@@ -16,10 +18,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.Field.TermVector;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
@@ -46,9 +50,9 @@ public class IndexerB extends SwingWorker <Void, Void> {
     Metadata metadata;
     Parser parser;
     int counter;
-    AuditCompanion companion;
+    Companion collector;
 
-    public IndexerB(String indexPath, MyTableModel model, DocLang lang, AuditCompanion companion) {
+    public IndexerB(String indexPath, MyTableModel model, DocLang lang, Companion companion) {
         //docDir = new File(docsPath);
         try {
             indexDir = FSDirectory.open(new File(indexPath));
@@ -63,7 +67,7 @@ public class IndexerB extends SwingWorker <Void, Void> {
             System.out.println(ex);
         }
         counter = 0;
-        this.companion = companion;
+        this.collector = companion;
         this.model = model;
     }
 
@@ -75,27 +79,29 @@ public class IndexerB extends SwingWorker <Void, Void> {
     
     @Override
     public void done() {
-        companion.setCursor(null);
-        companion.setStage(AuditCompanion.Stage.INDEX_CREATED);
+        collector.setCursor(null);
+        collector.setStage(Stage.INDEX_CREATED);
     }    
    
     public void makeIndex() {
         System.out.println("Indexing to directiory");
         try {
             IndexWriterConfig iwc = new IndexWriterConfig(Version.LUCENE_36, analyzer);
-            iwc.setOpenMode(OpenMode.CREATE);
+            iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
             IndexWriter writer;
             writer = new IndexWriter(indexDir, iwc);
             indexDocs(writer);
             writer.close();
         } catch (CorruptIndexException | LockObtainFailedException ex) {
             System.out.println(ex.getMessage());
+            Companion.logger.log(Level.SEVERE, ex.getMessage());
         }
         catch (SAXException | TikaException | IOException ex) {
             System.out.println(ex.getMessage());
+            Companion.logger.log(Level.SEVERE, ex.getMessage());
         }
         Date end = new Date();
-	companion.setMessage(String.format("Indexing completed : total %d files", counter));
+	collector.setMessage(String.format("Indexing completed : total %d files", counter));
     }
 
     public void indexDocs(IndexWriter writer) throws IOException, SAXException, TikaException {
@@ -106,9 +112,7 @@ public class IndexerB extends SwingWorker <Void, Void> {
             if ((Boolean) model.getValueAt(i, 0)) {
                 String src = model.getValueAt(i, 1).toString();
                 File file = new File(src);
-                FileInputStream fis;
-                try {
-                    fis = new FileInputStream(file);
+                try (FileInputStream fis = new FileInputStream(file)) {
                     // Tika --------------------------------------------------------
                     contentHandler = new BodyContentHandler();
                     metadata = new Metadata();
@@ -116,22 +120,49 @@ public class IndexerB extends SwingWorker <Void, Void> {
                     metadata.set(Metadata.RESOURCE_NAME_KEY, file.getAbsolutePath());
                     parser.parse(fis, contentHandler, metadata, new ParseContext());
                     
+                    //String hashValue = MyUtil.getHashCode(file);    
+                    String hashValue = MyUtil.getHashCode(file);
                     Document doc = new Document();
-                    doc.add(new Field("path", file.getParent(), Store.YES, Index.NOT_ANALYZED));
-                    doc.add(new Field("filename", file.getName(), Store.YES, Index.ANALYZED));
+                    doc.add(new Field("path", "..\\Files", Store.YES, Index.NOT_ANALYZED));
+                    doc.add(new Field("file-name", file.getName(), Store.YES, Index.ANALYZED));
+                    doc.add(new Field("full-file-name", file.getAbsolutePath(), Store.YES, Index.NOT_ANALYZED));
+                    doc.add(new Field("file-size", Long.toString(file.length()), Store.YES, Index.NOT_ANALYZED));
+                    doc.add(new Field("md5", hashValue, Store.YES, Index.NOT_ANALYZED));
+                    String[] metaNames = metadata.names();
+                    for (String metaName : metaNames) {
+                        //System.out.println(metaName + ": " + metadata.get(metaName) );
+                        switch (metaName) {
+                            case "Author":
+                                doc.add(new Field("author", metadata.get("Author"), Store.YES, Index.NOT_ANALYZED));
+                                break;
+                            case "Creation-Date":
+                                doc.add(new Field("creation-date", metadata.get("Creation-Date"), Store.YES, Index.NOT_ANALYZED));
+                                break;
+                            case "meta:last-author":
+                                doc.add(new Field("last-author", metadata.get("meta:last-author"), Store.YES, Index.NOT_ANALYZED));
+                                break;
+                            case "Last-Modified":
+                                doc.add(new Field("last-modified", metadata.get("Last-Modified"), Store.YES, Index.NOT_ANALYZED));                       
+                                break;
+                            case "Application-Name":
+                                doc.add(new Field("application-name", metadata.get("Application-Name"), Store.YES, Index.NOT_ANALYZED));
+                                break;
+                        }
+                    }
                     // Tika ---------------------------------------------------------
                     doc.add(new Field("contents", contentHandler.toString(), Store.YES, 
-                            Index.ANALYZED));
+                            Index.ANALYZED, TermVector.WITH_POSITIONS_OFFSETS));
                     // --------------------------------------------------------------
-                    writer.addDocument(doc);
+                    writer.updateDocument(new Term("full-file-name",file.getAbsolutePath()), doc);
+                    //writer.addDocument(doc);
                     counter++;
                     // System.out.format("%5d. adding %s\n", counter, file);
-                    companion.setMessage(String.format("%5d. adding %s\n", counter, file));                             
+                    collector.setMessage(String.format("%5d. adding %s\n", counter, file));                             
                     // -------------------------------------------------------------
-                } catch (FileNotFoundException e) {
+                } catch (FileNotFoundException |  TikaException | SAXException ex ) {
                     // some temporary files raise this exception with an "access denied" message
-                    System.out.println(e);
-                    return;
+                    System.out.println(ex + " : " + file.getAbsolutePath());
+                    Companion.logger.log(Level.SEVERE, "{0}: {1}", new Object[]{ex.getMessage(), file.getAbsolutePath()});
                 }
             }
         } 

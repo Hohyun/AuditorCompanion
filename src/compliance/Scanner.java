@@ -4,26 +4,24 @@
  */
 package compliance;
 
-import java.awt.Toolkit;
+import compliance.Companion.Stage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.*;
 import java.util.List;
-import compliance.AuditCompanion.Stage;
+import java.util.logging.Level;
+import javax.swing.*;
 
 /**
  *
  * @author hohkim
  */
-public class Analyzer extends SwingWorker<Void,Void>{
+public class Scanner extends SwingWorker<Void,Void>{
  
-    AuditCompanion parentApp;
+    Companion collector;
     double fileSize;
     int extractFileCount;
     int totalFileCount;
@@ -38,12 +36,12 @@ public class Analyzer extends SwingWorker<Void,Void>{
     int numberOfTopDir = 0;
     int progress = 0;
 
-    public Analyzer(List<String> dirs, List<String> fileTypes, String targetFolder, File fileList, JFrame parent) {
+    public Scanner(List<String> dirs, List<String> fileTypes, String targetFolder, File fileList, JFrame parent) {
         topDir = dirs;
         okFileExtention = fileTypes;
         targetDir = targetFolder.replace("\\", "\\\\");
         this.fileList = fileList;
-        parentApp = (AuditCompanion) parent;
+        collector = (Companion) parent;
         // counter 초기화
         fileSize = 0;
         extractFileCount = 0;
@@ -53,7 +51,7 @@ public class Analyzer extends SwingWorker<Void,Void>{
     }
     
     public void setParent(JFrame parent) {
-        parentApp = (AuditCompanion) parent;
+        collector = (Companion) parent;
     }
 
     @Override
@@ -94,7 +92,7 @@ public class Analyzer extends SwingWorker<Void,Void>{
                                     Date end = new Date();
                                     lapTime = (end.getTime() - start.getTime()) / 1000;
                                     //printProcessingInfo(f);
-                                    parentApp.setMessage(String.format("%,d Files (%.1f MB) found in %,d Dirs, "
+                                    collector.setMessage(String.format("%,d Files (%.1f MB) found in %,d Dirs, "
                                        + "%,d Files --> next folder [%s] : %.1f Seconds ...%n",
                                         getExtractFileCount(), getFileSize() / 1048567,
                                         getDirCount(), getTotalFileCount(), f.getAbsolutePath(), lapTime));                         
@@ -107,6 +105,7 @@ public class Analyzer extends SwingWorker<Void,Void>{
                                 }
                             } catch (NullPointerException e) {
                                 System.out.println("Null Poniter EX: " + e.getMessage());
+                                Companion.logger.log(Level.SEVERE, "{0}: {1}", new Object[]{e.getMessage(), f.getAbsolutePath()});
                                 continue;
                             }
                         }
@@ -115,23 +114,25 @@ public class Analyzer extends SwingWorker<Void,Void>{
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
+            collector.logger.log(Level.SEVERE, e.getMessage());
         }
         return null;
     }
 
     @Override
     public void done() {
-        parentApp.setCursor(null);
-        parentApp.setMessage(String.format("Completed : %d files found. (Information file : %s)%n", 
+        collector.setCursor(null);
+        collector.setMessage(String.format("Completed : %d files found. (Information file : %s)%n", 
                 extractFileCount, fileList.getAbsolutePath()));
         // System.out.format("Please refer to the processing info file : %s%n", fileList.getAbsolutePath());
         try {
             bw.close();
-            parentApp.setInfoTable(fileList);
+            collector.setInfoTable(fileList);
         } catch (IOException ex) {
             System.out.println(ex);
+            collector.logger.log(Level.SEVERE, ex.getMessage());
         }
-        parentApp.setStage(Stage.ANALYZE_COMPLETED);
+        collector.setStage(Stage.ANALYZE_COMPLETED);
     }
     
      public int getTopDirCount (){
@@ -151,6 +152,7 @@ public class Analyzer extends SwingWorker<Void,Void>{
         } catch (NullPointerException e) {
             // it happens when directory is $RECYCLE.BIN, System Volume Information, etc.
             System.out.println("Null Poniter: " + e.getMessage());
+            collector.logger.log(Level.SEVERE, e.getMessage());
             return;
         } 
         
@@ -164,6 +166,7 @@ public class Analyzer extends SwingWorker<Void,Void>{
                     bw.newLine();
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
+                    Companion.logger.log(Level.SEVERE, "{0}: {1}", new Object[]{e.getMessage(), file.getAbsolutePath()});
                 }
                 fileSize += file.length();
                 extractFileCount++;
@@ -186,6 +189,11 @@ public class Analyzer extends SwingWorker<Void,Void>{
                 + "%,d Files --> next folder [%s] : %.1f Seconds ...%n",
                 getExtractFileCount(), getFileSize() / 1048567,
                 getDirCount(), getTotalFileCount(), dir.getAbsolutePath(), lapTime);
+        Companion.logger.log(Level.INFO, 
+                String.format("%,d Files (%.1f MB) extracted in %,d Dirs, "
+                + "%,d Files --> next folder [%s] : %.1f Seconds ...%n",
+                getExtractFileCount(), getFileSize() / 1048567,
+                getDirCount(), getTotalFileCount(), dir.getAbsolutePath(), lapTime));
     }    
    
     public double getFileSize() {

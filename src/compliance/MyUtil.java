@@ -67,7 +67,7 @@ public class MyUtil {
      * <b> </b> tags
      * @throws IOException
      */
-    public static String[] getFragmentsWithHighlightedTerms(org.apache.lucene.analysis.Analyzer analyzer, Query query,
+    public static String getFragmentsWithHighlightedTerms(org.apache.lucene.analysis.Analyzer analyzer, Query query,
             String fieldName, String fieldContents, int fragmentNumber, int fragmentSize) throws IOException {
 
         TokenStream stream = TokenSources.getTokenStream(fieldName, fieldContents, analyzer);    
@@ -84,7 +84,11 @@ public class MyUtil {
         } catch (InvalidTokenOffsetsException ex) {
             System.out.println(ex);
         }
-        return fragments;
+        String highlighted = "";
+            for (String frag : fragments) {
+                highlighted += frag;
+            }
+        return highlighted.replaceAll("\n", "<br/>");
     }    
     
   /**

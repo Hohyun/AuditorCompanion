@@ -4,14 +4,15 @@
  */
 package compliance;
 
+import compliance.Companion.Stage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.logging.Level;
 import javax.swing.SwingWorker;
-import compliance.AuditCompanion.Stage;
 
 /**
  *
@@ -19,12 +20,12 @@ import compliance.AuditCompanion.Stage;
  */
 public class Copier extends SwingWorker<Void,Void> {
     private MyTableModel model;
-    private AuditCompanion companion;
+    private Companion collector;
     private String targetFileDir;
 
-    public Copier (MyTableModel model, AuditCompanion companion) {
+    public Copier (MyTableModel model, Companion companion) {
         this.model = model;
-        this.companion = companion;
+        this.collector = companion;
         this.targetFileDir = companion.getFileDir();
     }
     
@@ -73,29 +74,34 @@ public class Copier extends SwingWorker<Void,Void> {
                     current_count++;
                     // System.out.format("Copied (%d of %d) : %s --> %s\n", 
                     //         current_count, copy_count, file1.getAbsolutePath(), file2.getAbsolutePath());
-                    companion.setMessage(String.format("Copied (%d of %d): %s --> %s", 
+                    collector.setMessage(String.format("Copied (%d of %d): %s --> %s", 
                             current_count, copy_count, file1.getAbsolutePath(), file2.getAbsolutePath()));             
 
                 } catch (NullPointerException ex) {
                     System.out.println("Null Pointer Exception : " + ex.getMessage());
+                    Companion.logger.log(Level.SEVERE, ex.getMessage());
                 } catch (SecurityException ex) {
                     System.out.println("Security Exception : " + ex.getMessage());
+                    Companion.logger.log(Level.SEVERE, ex.getMessage());
                 } catch (ArrayIndexOutOfBoundsException ex) {
                     System.out.println("Array Index out of bound Exception " + ex.getMessage()); 
+                    Companion.logger.log(Level.SEVERE, ex.getMessage());
                 } catch (FileNotFoundException ex) {
                     System.out.println("File not found Exception " + ex.getMessage());
+                    Companion.logger.log(Level.SEVERE, ex.getMessage());
                 } catch (IOException ex) {
                     System.out.println("Io Exception : " + ex.getMessage());
+                    Companion.logger.log(Level.SEVERE, ex.getMessage());
                 } 
             }
         }
-        companion.setMessage(String.format("Copy completed : total %d files.", current_count));
+        collector.setMessage(String.format("Copy completed : total %d files.", current_count));
 
         // InfoTable Update
         String[] columnNames = {"Select", "File Name", "Size(KB)", "Modified", "Hash Code", "Verify"};        
         model = new MyTableModel(data1, columnNames);
-        companion.setInfoTable(model);
-        companion.setInfoDataAndHeader(data1, columnNames);
+        collector.setInfoTable(model);
+        collector.setInfoDataAndHeader(data1, columnNames);
         return null;
     }
     /**
@@ -103,7 +109,7 @@ public class Copier extends SwingWorker<Void,Void> {
      */
     @Override
     public void done() {
-        companion.setCursor(null);
-        companion.setStage(Stage.COPY_COMPLETED);
+        collector.setCursor(null);
+        collector.setStage(Stage.COPY_COMPLETED);
     }
 }
