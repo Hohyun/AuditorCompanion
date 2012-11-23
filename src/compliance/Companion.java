@@ -645,7 +645,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         tabbedPane1.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
 
         contentsArea.setContentType("text/html"); // NOI18N
-        contentsArea.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
         contentsArea.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n\n    </p>\r\n  </body>\r\n</html>\r\n");
         jScrollPane3.setViewportView(contentsArea);
 
