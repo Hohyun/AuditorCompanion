@@ -368,7 +368,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jSP2s.setViewportView(searchWords);
 
         buttonSearch.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        buttonSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Search24.gif"))); // NOI18N
         buttonSearch.setText("Search");
         buttonSearch.setEnabled(false);
         buttonSearch.addActionListener(new java.awt.event.ActionListener() {
@@ -388,7 +387,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jLabel4s.setText("(예) 합의 회의 가격 인상 저지 +필수단어 -제외단어 필드이름:검색어");
 
         buttonClear.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        buttonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Undo24.gif"))); // NOI18N
         buttonClear.setText("Clear");
         buttonClear.setEnabled(false);
         buttonClear.addActionListener(new java.awt.event.ActionListener() {
@@ -398,7 +396,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         });
 
         buttonOpenIndex.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        buttonOpenIndex.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Open24.gif"))); // NOI18N
         buttonOpenIndex.setText("Open Index");
         buttonOpenIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -407,7 +404,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         });
 
         buttonKeywordLoad.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        buttonKeywordLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Import24.gif"))); // NOI18N
         buttonKeywordLoad.setText("Load");
         buttonKeywordLoad.setEnabled(false);
         buttonKeywordLoad.addActionListener(new java.awt.event.ActionListener() {
@@ -417,7 +413,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         });
 
         buttonKeywordSave.setFont(new java.awt.Font("맑은 고딕", 1, 12)); // NOI18N
-        buttonKeywordSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/SaveAs24.gif"))); // NOI18N
         buttonKeywordSave.setText("Save");
         buttonKeywordSave.setEnabled(false);
         buttonKeywordSave.addActionListener(new java.awt.event.ActionListener() {
@@ -448,7 +443,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                         .addComponent(buttonKeywordLoad)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(buttonKeywordSave)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                         .addComponent(indexInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -638,7 +633,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 .addContainerGap()
                 .addComponent(pageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(midLeftBottomP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -676,7 +671,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -684,7 +679,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 677, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 675, Short.MAX_VALUE)
                     .addComponent(jScrollPane9))
                 .addContainerGap())
         );
@@ -699,15 +694,15 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 853, Short.MAX_VALUE)
+            .addGap(0, 761, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 853, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 761, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 687, Short.MAX_VALUE)
+            .addGap(0, 685, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE))
         );
 
         tabbedPane1.addTab("추가정보", jPanel2);
@@ -745,7 +740,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         searcherP.add(bottomP, java.awt.BorderLayout.PAGE_END);
 
-        mainTabbedPane.addTab("Searcher", new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Search16.gif")), searcherP); // NOI18N
+        mainTabbedPane.addTab("Searcher", searcherP);
 
         statusLabel.setText("WELCOME!");
 
@@ -808,9 +803,9 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(vSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 793, Short.MAX_VALUE)
+                .addComponent(vSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 794, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSPs, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jSPs, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         hSplitPane.setLeftComponent(jPanel4);
@@ -832,7 +827,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         ));
         jScrollPane2.setViewportView(infoTable);
 
-        buttonNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/New24.gif"))); // NOI18N
         buttonNew.setText("New");
         buttonNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -840,7 +834,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         });
 
-        buttonOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Open24.gif"))); // NOI18N
         buttonOpen.setText("Open");
         buttonOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -848,7 +841,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         });
 
-        buttonScan.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Find24.gif"))); // NOI18N
         buttonScan.setText("Scan");
         buttonScan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -856,7 +848,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         });
 
-        buttonCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Copy24.gif"))); // NOI18N
         buttonCopy.setText("Copy");
         buttonCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -864,7 +855,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         });
 
-        buttonIndex.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Bookmarks24.gif"))); // NOI18N
         buttonIndex.setText("Index");
         buttonIndex.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -872,7 +862,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         });
 
-        buttonReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Undo24.gif"))); // NOI18N
         buttonReset.setText("Reset");
         buttonReset.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -885,7 +874,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap(120, Short.MAX_VALUE)
+                .addContainerGap(158, Short.MAX_VALUE)
                 .addComponent(buttonNew)
                 .addGap(18, 18, 18)
                 .addComponent(buttonOpen)
@@ -897,7 +886,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 .addComponent(buttonIndex)
                 .addGap(18, 18, 18)
                 .addComponent(buttonReset)
-                .addContainerGap(256, Short.MAX_VALUE))
+                .addContainerGap(294, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -956,7 +945,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        mainTabbedPane.addTab("Collector", new javax.swing.ImageIcon(getClass().getResource("/compliance/images/Bookmarks16.gif")), collectorP); // NOI18N
+        mainTabbedPane.addTab("Collector", collectorP);
 
         advisorBasic.setContentType("text/html"); // NOI18N
         jScrollPane5.setViewportView(advisorBasic);
@@ -967,14 +956,14 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1285, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -989,14 +978,14 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1285, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1011,14 +1000,14 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1285, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1034,14 +1023,14 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 1285, Short.MAX_VALUE)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 1193, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 810, Short.MAX_VALUE)
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1064,7 +1053,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 .addContainerGap())
         );
 
-        mainTabbedPane.addTab("Advisor", new javax.swing.ImageIcon(getClass().getResource("/compliance/images/About16.gif")), advisorP); // NOI18N
+        mainTabbedPane.addTab("Advisor", advisorP);
 
         mainTabbedPane.setSelectedIndex(2);
 
@@ -1792,14 +1781,14 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
     // Helper methods for Analyze, Copy, Index
     public void initInfoTable() {
-        Object[][] data = {};
+        Object[][] data = { {"", "", "", "", "" } };
         String[] columnNames = {"Select", "File Name", "Size(KB)", "Modified", "Hash Code"};
         model = new MyTableModel(data, columnNames);
         infoTable.setModel(model);
     }
     
     public void initResultTable() {
-        Object[][] data = {};
+        Object[][] data = { {"", "", "" } };
         String[] columnNames = {"SQ", "Path", "File Name" };
         model = new MyTableModel(data, columnNames);
         resultTable.setModel(model);
@@ -1807,7 +1796,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }
    
     public void initFragmentTable() {
-        Object[][] data = {};
+        Object[][] data = {{""}};
         String[] columnNames = {"찾은 글 조각" };
         model = new MyTableModel(data, columnNames);
         fragmentTable.setModel(model);

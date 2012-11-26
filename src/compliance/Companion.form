@@ -219,9 +219,6 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Searcher">
                 <Property name="tabTitle" type="java.lang.String" value="Searcher"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/compliance/images/Search16.gif"/>
-                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -264,7 +261,7 @@
                                   <Component id="buttonKeywordLoad" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="buttonKeywordSave" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="32767" attributes="0"/>
+                                  <EmptySpace pref="53" max="32767" attributes="0"/>
                                   <Component id="indexInfoLabel" min="-2" pref="316" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -326,9 +323,6 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
                     </Property>
-                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/compliance/images/Search24.gif"/>
-                    </Property>
                     <Property name="text" type="java.lang.String" value="Search"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -365,9 +359,6 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
                     </Property>
-                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/compliance/images/Undo24.gif"/>
-                    </Property>
                     <Property name="text" type="java.lang.String" value="Clear"/>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -380,9 +371,6 @@
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
                     </Property>
-                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/compliance/images/Open24.gif"/>
-                    </Property>
                     <Property name="text" type="java.lang.String" value="Open Index"/>
                   </Properties>
                   <Events>
@@ -393,9 +381,6 @@
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
-                    </Property>
-                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/compliance/images/Import24.gif"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Load"/>
                     <Property name="enabled" type="boolean" value="false"/>
@@ -408,9 +393,6 @@
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                       <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
-                    </Property>
-                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/compliance/images/SaveAs24.gif"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Save"/>
                     <Property name="enabled" type="boolean" value="false"/>
@@ -504,7 +486,7 @@
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="pageLabel" min="-2" pref="19" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
-                                  <Component id="jScrollPane1" pref="621" max="32767" attributes="0"/>
+                                  <Component id="jScrollPane1" pref="619" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="midLeftBottomP" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -736,7 +718,7 @@
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jScrollPane3" pref="585" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane3" pref="493" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="jScrollPane9" min="-2" pref="261" max="-2" attributes="0"/>
                                   </Group>
@@ -746,7 +728,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jScrollPane3" pref="677" max="32767" attributes="0"/>
+                                          <Component id="jScrollPane3" pref="675" max="32767" attributes="0"/>
                                           <Component id="jScrollPane9" max="32767" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -805,17 +787,17 @@
                           <Layout>
                             <DimensionLayout dim="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="853" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="761" max="32767" attributes="0"/>
                                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                                      <Component id="jScrollPane4" alignment="0" pref="853" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane4" alignment="0" pref="761" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="687" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="685" max="32767" attributes="0"/>
                                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                                      <Component id="jScrollPane4" alignment="0" pref="687" max="32767" attributes="0"/>
+                                      <Component id="jScrollPane4" alignment="0" pref="685" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -883,9 +865,6 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Collector">
                 <Property name="tabTitle" type="java.lang.String" value="Collector"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/compliance/images/Bookmarks16.gif"/>
-                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -993,9 +972,9 @@
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="vSplitPane" pref="793" max="32767" attributes="0"/>
+                              <Component id="vSplitPane" pref="794" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jSPs" min="-2" pref="57" max="-2" attributes="0"/>
+                              <Component id="jSPs" min="-2" pref="46" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1104,7 +1083,7 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace pref="120" max="32767" attributes="0"/>
+                                  <EmptySpace pref="158" max="32767" attributes="0"/>
                                   <Component id="buttonNew" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="buttonOpen" min="-2" max="-2" attributes="0"/>
@@ -1116,7 +1095,7 @@
                                   <Component id="buttonIndex" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="buttonReset" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="256" max="32767" attributes="0"/>
+                                  <EmptySpace pref="294" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1140,9 +1119,6 @@
                       <SubComponents>
                         <Component class="javax.swing.JButton" name="buttonNew">
                           <Properties>
-                            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/compliance/images/New24.gif"/>
-                            </Property>
                             <Property name="text" type="java.lang.String" value="New"/>
                           </Properties>
                           <Events>
@@ -1151,9 +1127,6 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonOpen">
                           <Properties>
-                            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/compliance/images/Open24.gif"/>
-                            </Property>
                             <Property name="text" type="java.lang.String" value="Open"/>
                           </Properties>
                           <Events>
@@ -1162,9 +1135,6 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonScan">
                           <Properties>
-                            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/compliance/images/Find24.gif"/>
-                            </Property>
                             <Property name="text" type="java.lang.String" value="Scan"/>
                           </Properties>
                           <Events>
@@ -1173,9 +1143,6 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonCopy">
                           <Properties>
-                            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/compliance/images/Copy24.gif"/>
-                            </Property>
                             <Property name="text" type="java.lang.String" value="Copy"/>
                           </Properties>
                           <Events>
@@ -1184,9 +1151,6 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonIndex">
                           <Properties>
-                            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/compliance/images/Bookmarks24.gif"/>
-                            </Property>
                             <Property name="text" type="java.lang.String" value="Index"/>
                           </Properties>
                           <Events>
@@ -1195,9 +1159,6 @@
                         </Component>
                         <Component class="javax.swing.JButton" name="buttonReset">
                           <Properties>
-                            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                              <Image iconType="3" name="/compliance/images/Undo24.gif"/>
-                            </Property>
                             <Property name="text" type="java.lang.String" value="Reset"/>
                           </Properties>
                           <Events>
@@ -1217,9 +1178,6 @@
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Advisor">
                 <Property name="tabTitle" type="java.lang.String" value="Advisor"/>
-                <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/compliance/images/About16.gif"/>
-                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -1263,7 +1221,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane5" pref="1285" max="32767" attributes="0"/>
+                              <Component id="jScrollPane5" pref="1193" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1272,7 +1230,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane5" pref="810" max="32767" attributes="0"/>
+                              <Component id="jScrollPane5" pref="800" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1306,7 +1264,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane6" pref="1285" max="32767" attributes="0"/>
+                              <Component id="jScrollPane6" pref="1193" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1315,7 +1273,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane6" pref="810" max="32767" attributes="0"/>
+                              <Component id="jScrollPane6" pref="800" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1349,7 +1307,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane7" pref="1285" max="32767" attributes="0"/>
+                              <Component id="jScrollPane7" pref="1193" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1358,7 +1316,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane7" pref="810" max="32767" attributes="0"/>
+                              <Component id="jScrollPane7" pref="800" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1392,7 +1350,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane8" pref="1285" max="32767" attributes="0"/>
+                              <Component id="jScrollPane8" pref="1193" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1401,7 +1359,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jScrollPane8" pref="810" max="32767" attributes="0"/>
+                              <Component id="jScrollPane8" pref="800" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
