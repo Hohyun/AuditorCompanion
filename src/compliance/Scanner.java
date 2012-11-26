@@ -130,7 +130,7 @@ public class Scanner extends SwingWorker<Void,Void>{
             collector.setInfoTable(fileList);
         } catch (IOException ex) {
             System.out.println(ex);
-            collector.logger.log(Level.SEVERE, ex.getMessage());
+            Companion.logger.log(Level.SEVERE, ex.getMessage());
         }
         collector.setStage(Stage.ANALYZE_COMPLETED);
     }
@@ -152,7 +152,7 @@ public class Scanner extends SwingWorker<Void,Void>{
         } catch (NullPointerException e) {
             // it happens when directory is $RECYCLE.BIN, System Volume Information, etc.
             System.out.println("Null Poniter: " + e.getMessage());
-            collector.logger.log(Level.SEVERE, e.getMessage());
+            Companion.logger.log(Level.SEVERE, e.getMessage());
             return;
         } 
         
@@ -172,6 +172,9 @@ public class Scanner extends SwingWorker<Void,Void>{
                 extractFileCount++;
             }
             totalFileCount++;
+            if (totalFileCount % 10 == 0) {
+            collector.setMessage(String.format("Found %s of %s in %d Diectories.", extractFileCount, totalFileCount, dirCount));
+        }
         }
     }
 	
