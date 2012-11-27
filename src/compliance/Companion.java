@@ -1691,7 +1691,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             public void run() {
                     Companion searcher = new Companion();
                     Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
-                            .getResource("/compliance/images/Search-Search-icon.png"));
+                            .getResource("images/Search-Search-icon.png"));
                     searcher.setIconImage(icon);
                     searcher.initResultTable();
                     searcher.setVisible(true);
@@ -2144,7 +2144,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             try {
                 updateInfoTable(jobFileTypes);       
             } catch (IOException evt) {
-                System.out.println(evt.getMessage());
+                Companion.logger.log(Level.SEVERE, evt.getMessage());
             }
         }         
     }
