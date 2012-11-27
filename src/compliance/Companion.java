@@ -185,11 +185,10 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 for (File dir: dirs) {
                     if (dir.isDirectory()) {
                         try {
-                            //createSubNode(drive, dir);
-                            DefaultMutableTreeNode node = new DefaultMutableTreeNode(dir.getName());
-                            drive.add(node);
+                            createSubNode(drive, dir);
                         } catch (NullPointerException e) {
-                            System.err.println(e.getMessage() + ": " + dir.getName());
+                            // Error occurs in "Documents and Settings, System volumn informtion
+                            // System.err.println(e.getMessage() + ": " + dir.getName());
                         }
                     }
                 }
@@ -197,22 +196,17 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         }
     }
     
-    public void createSubNode(DefaultMutableTreeNode parent, File dir) {
-       DefaultMutableTreeNode child = new DefaultMutableTreeNode(dir.getName());
-       parent.add(child);
-       
-       File[] files = dir.listFiles();
-       for (File file: files) {
-           if (file.isDirectory()) {
-               try {
-                   DefaultMutableTreeNode grandchild = new DefaultMutableTreeNode(file.getName());
-                   child.add(grandchild);
-                   //createSubNode(child, file);
-               } catch (NullPointerException e) {
-                   System.err.println(e.getMessage() + ": " + file.getName());            
-               }
-           }
-       }
+    public void createSubNode(DefaultMutableTreeNode parent, File dir) throws NullPointerException {
+        DefaultMutableTreeNode child = new DefaultMutableTreeNode(dir.getName());
+        parent.add(child);
+
+        File[] files = dir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                DefaultMutableTreeNode grandchild = new DefaultMutableTreeNode(file.getName());
+                child.add(grandchild);
+            }
+        }
    }
     // 화면 초기화 (Treeview) 끝
     
@@ -2127,7 +2121,11 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         for (TreePath node : folderNodes) {
             String pathString = "";
             for (int i = 1; i < node.getPath().length; i++) {
-                pathString += node.getPath()[i].toString();
+                if ("".equals(pathString) || pathString.endsWith("\\")) {
+                    pathString += node.getPath()[i].toString();           
+                } else {
+                    pathString += "\\" + node.getPath()[i].toString();
+                }           
             }
             jobDirs.add(pathString);
         }
@@ -2137,6 +2135,9 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             }
         } 
         Collections.sort(jobDirs);
+        //-----------
+        System.out.println(jobDirs);
+        //-----------
         checkManualFileTypes();
         Collections.sort(jobFileTypes);
         if (stage == Stage.ANALYZE_COMPLETED || stage == Stage.CASE_LOADED 
