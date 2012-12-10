@@ -59,6 +59,7 @@ public class Searcher {
     private final int MAX_FRAGMENT_COUNT = 100;
     private final String htmlHeader = "<html><head><style>b {color:black; font-weight:bold; background-color:yellow}</style></head><body>";
     private final String htmlFooter = "</body></html>";
+    private String highlighted;
     
     public Searcher(Companion companion) {
         this.companion = companion;
@@ -133,7 +134,8 @@ public class Searcher {
         companion.setNavigateButtonsState();
     }
 
-    public String getHighlightedText(int docId, String fieldName, Document doc) throws IOException {
+    public String getHighlightedText(int docId, String fieldName, Document doc) 
+            throws IOException, InvalidTokenOffsetsException {
         TokenStream stream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
         QueryScorer scorer = new QueryScorer(query, fieldName);
         // fragment의 size를 내용전체 크기와 같게 하여 1개로 잘리게 한다.
@@ -141,14 +143,13 @@ public class Searcher {
         highlighter = new Highlighter(formatter, scorer);
         highlighter.setTextFragmenter(fragmenter);
         highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
-        String highlighted = "";
+        // 한개로 잘렸으므로 세번째 인수 fragment 갯수를 어떻게 주더라도, 내부의 모든 일치단어가 highlight 된다.
         try {
-            // 한개로 잘렸으므로 세번째 인수 fragment 갯수를 어떻게 주더라도, 내부의 모든 일치단어가 highlight 된다.
-            highlighted = highlighter.getBestFragments(stream, doc.get("contents"), 1, "...");
-            highlighted = htmlHeader + highlighted + htmlFooter;
-        } catch (InvalidTokenOffsetsException ex) {
-            Companion.logger.log(Level.SEVERE, ex.getMessage());
+            highlighted = highlighter.getBestFragments(stream, doc.get("contents"), 2, "...");
+        } catch (NoClassDefFoundError | IOException | InvalidTokenOffsetsException ex) {
+            //
         }
+        highlighted = htmlHeader + highlighted + htmlFooter;
         return highlighted.replaceAll("\n", "<br>");
     }    
      
@@ -157,8 +158,10 @@ public class Searcher {
 	    return highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
 	}
     
-    public MyTableModel getModelForFragment(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
+    public MyTableModel getModelForFragment(int docId, String fieldName, Document doc)
+            throws IOException, InvalidTokenOffsetsException {
         String[] columnNames = {"찾은 글 조각"};
+        Object[][] data = {};
         int rowCount = 0;
   
         TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
@@ -167,18 +170,28 @@ public class Searcher {
         highlighter = new Highlighter(formatter, scorer);
         highlighter.setTextFragmenter(fragmenter);
         highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
-                
-        TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);     
-	for (int i = 0; i < frags.length; i++) {
-           if ((frags[i] != null) && (frags[i].getScore() > 0)) {
-                 rowCount++;
-           }
+
+        TextFragment[] frags = null;      
+        try {
+            frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
+        } catch (NoClassDefFoundError | IOException | InvalidTokenOffsetsException ex) {
+            // do nothing
+            MyTableModel model1 = new MyTableModel(data, columnNames);
+            return model1;
         }
-        Object[][] data = new Object[rowCount][1]; 
-        for (int i = 0; i < frags.length; i++) {
-           if ((frags[i] != null) && (frags[i].getScore() > 0)) {
-                 data[i][0] = htmlHeader + frags[i].toString() + htmlFooter;
-           }
+        
+        if (frags != null) {
+            for (int i = 0; i < frags.length; i++) {
+                if ((frags[i] != null) && (frags[i].getScore() > 0)) {
+                    rowCount++;
+                }
+            }
+            data = new Object[rowCount][1];
+            for (int i = 0; i < frags.length; i++) {
+                if ((frags[i] != null) && (frags[i].getScore() > 0)) {
+                    data[i][0] = htmlHeader + frags[i].toString() + htmlFooter;
+                }
+            }
         }
         MyTableModel model1 = new MyTableModel(data, columnNames);
         return model1;
@@ -201,11 +214,12 @@ public class Searcher {
                sb.append(frags[i].toString()).append("...<hr>");
            }
        }      
-       String highlighted = htmlHeader + sb.toString() + htmlFooter;
+       highlighted = htmlHeader + sb.toString() + htmlFooter;
        return highlighted.replaceAll("\n", "<br>");
     }
                
     public void setContentsAndMetaArea(int row) {
+        highlighted = "";
         if (model.getValueAt(row, 0) == null) {
             return;
         }
@@ -214,10 +228,16 @@ public class Searcher {
         Document doc;
         try {
             doc = indexSearcher.doc(scoreDoc.doc);
-            String highlighted = getHighlightedText(scoreDoc.doc, "contents", doc);
-            companion.setContentsArea(highlighted);
-            companion.setFragmentTable(getModelForFragment(scoreDoc.doc, "contents", doc));
-            //companion.setFragmentTableRenderer();
+            highlighted = getHighlightedText(scoreDoc.doc, "contents", doc);
+            
+            if ((htmlHeader + htmlFooter).equals(highlighted)) {
+                highlighted = htmlHeader + doc.get("contents") + htmlFooter;
+                companion.setContentsArea(highlighted.replaceAll("\n", "<br>"));
+                companion.initFragmentTable();
+            } else { 
+                companion.setContentsArea(highlighted);
+                companion.setFragmentTable(getModelForFragment(scoreDoc.doc, "contents", doc));
+            }                
             
             // Metadata
             String metaString = "";
@@ -226,8 +246,14 @@ public class Searcher {
             String fileSize = doc.get("file-size");
             String pageCount = doc.get("page-count");
             String md5origin = doc.get("md5");
-            File currentFile = new File(new File(indexDir, doc.get("path")),
+            //
+            File currentFile = null;
+            if ("..\\Files".equals(doc.get("path"))) {
+                currentFile = new File(new File(indexDir, doc.get("path")),
                     doc.get("file-name"));
+            } else {
+                currentFile = new File(doc.get("full-file-name"));
+            }
             String md5current = MyUtil.getHashCode(currentFile);
 
             String author = doc.get("author");

@@ -123,7 +123,7 @@ public class IndexerB extends SwingWorker <Void, Void> {
                     //String hashValue = MyUtil.getHashCode(file);    
                     String hashValue = MyUtil.getHashCode(file);
                     Document doc = new Document();
-                    doc.add(new Field("path", "..\\Files", Store.YES, Index.NOT_ANALYZED));
+                    doc.add(new Field("path", file.getParent(), Store.YES, Index.NOT_ANALYZED));
                     doc.add(new Field("file-name", file.getName(), Store.YES, Index.ANALYZED));
                     doc.add(new Field("full-file-name", file.getAbsolutePath(), Store.YES, Index.NOT_ANALYZED));
                     doc.add(new Field("file-size", Long.toString(file.length()), Store.YES, Index.NOT_ANALYZED));

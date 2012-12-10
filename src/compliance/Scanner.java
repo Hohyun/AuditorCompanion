@@ -26,18 +26,18 @@ public class Scanner extends SwingWorker<Void,Void>{
     int extractFileCount;
     int totalFileCount;
     int dirCount;
-    List<String> topDir;
+    List<String> jobDirs;
     float lapTime;
     List<String> okFileExtention;
     String targetDir;
     BufferedWriter bw;
     File fileList;
     int completedTopDir = 0;
-    int numberOfTopDir = 0;
     int progress = 0;
+    Date start;
 
     public Scanner(List<String> dirs, List<String> fileTypes, String targetFolder, File fileList, JFrame parent) {
-        topDir = dirs;
+        jobDirs = dirs;
         okFileExtention = fileTypes;
         targetDir = targetFolder.replace("\\", "\\\\");
         this.fileList = fileList;
@@ -53,63 +53,21 @@ public class Scanner extends SwingWorker<Void,Void>{
     public void setParent(JFrame parent) {
         collector = (Companion) parent;
     }
-
+    
     @Override
     public Void doInBackground() {
 
-        numberOfTopDir = getTopDirCount();
-        setProgress(0);
+        start = new Date();
         try {
-            //start();
-            Date start = new Date();
             bw = new BufferedWriter(new FileWriter(fileList));
-         
-            File currentDir;
-            File[] files;
-            for (String dir : topDir) {
-                dir = dir.replace("\\", "\\\\");
-                
-                if (dir.endsWith("\\")) {
-                    // C:\, D:\ ... Drive인 경우
-                    currentDir = new File(dir);
-                    files = currentDir.listFiles();
-                    if (files != null) {
-                        for (File f : files) {
-                            if (f.isFile()) {
-                                processFile(f);
-                            }
-                        }
-                    }
-                } 
-                else {  // Directory 인 경우
-                    currentDir = new File(dir);                    
-                    files = currentDir.listFiles();
-                    // Null if System Volumn Information
-                    if (files != null) {
-                        for (File f : files) {
-                            try {
-                                if (f.isDirectory()) {
-                                    Date end = new Date();
-                                    lapTime = (end.getTime() - start.getTime()) / 1000;
-                                    //printProcessingInfo(f);
-                                    collector.setMessage(String.format("%,d Files (%.1f MB) found in %,d Dirs, "
-                                       + "%,d Files --> next folder [%s] : %.1f Seconds ...%n",
-                                        getExtractFileCount(), getFileSize() / 1048567,
-                                        getDirCount(), getTotalFileCount(), f.getAbsolutePath(), lapTime));                         
-                                    completedTopDir++;
-                                    progress = (completedTopDir / numberOfTopDir) * 100;
-                                    setProgress(Math.min(progress, 100));
-                                    processFile(f);
-                                } else if (f.isFile()) {
-                                    processFile(f);
-                                }
-                            } catch (NullPointerException e) {
-                                System.out.println("Null Poniter EX: " + e.getMessage());
-                                Companion.logger.log(Level.SEVERE, "{0}: {1}", new Object[]{e.getMessage(), f.getAbsolutePath()});
-                                continue;
-                            }
-                        }
-                    }
+               
+            for (String jobDir : jobDirs) {
+                if (isSubDirChecked(jobDir)) {
+                // need to process for files in the directory not sub directory.
+                    processSubFilesAndSubDirs(new File(jobDir), false);
+                } else {
+                // Do recursive scan for the directory.
+                    processSubFilesAndSubDirs(new File(jobDir), true);
                 }
             }
         } catch (IOException e) {
@@ -122,9 +80,6 @@ public class Scanner extends SwingWorker<Void,Void>{
     @Override
     public void done() {
         collector.setCursor(null);
-        collector.setMessage(String.format("Completed : %d files found. (Information file : %s)%n", 
-                extractFileCount, fileList.getAbsolutePath()));
-        // System.out.format("Please refer to the processing info file : %s%n", fileList.getAbsolutePath());
         try {
             bw.close();
             collector.setInfoTable(fileList);
@@ -134,29 +89,27 @@ public class Scanner extends SwingWorker<Void,Void>{
         }
         collector.setStage(Stage.ANALYZE_COMPLETED);
     }
-    
-     public int getTopDirCount (){
-        return topDir.size();
-    }
      
-    public void processFile(File file) throws IOException {
+    public void processSubFilesAndSubDirs(File file, boolean checkDir) throws IOException {
         // make list containing only office files and directory.
         try {
-            if (file.isDirectory()) {
+            if (file.isDirectory() && checkDir) {
                 dirCount += 1;
                 File[] files = file.listFiles();
-                for (File f : files) {
-                    processFile(f);
+                // Null if System Volumn Information
+                if (files != null) {
+                    for (File f : files) {
+                        processSubFilesAndSubDirs(f, true);
+                    }
                 }
             }
         } catch (NullPointerException e) {
             // it happens when directory is $RECYCLE.BIN, System Volume Information, etc.
-            System.out.println("Null Poniter: " + e.getMessage());
             Companion.logger.log(Level.SEVERE, e.getMessage());
             return;
         } 
         
-        if (file.isFile()) {
+        if (file.isFile() && file.canRead()) {
             if (isOfficeFile(file)) {
                 String hashValue = MyUtil.getHashCode(file); 
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -165,7 +118,6 @@ public class Scanner extends SwingWorker<Void,Void>{
                             formatter.format(file.lastModified()) + "/" + hashValue);
                     bw.newLine();
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
                     Companion.logger.log(Level.SEVERE, "{0}: {1}", new Object[]{e.getMessage(), file.getAbsolutePath()});
                 }
                 fileSize += file.length();
@@ -173,11 +125,30 @@ public class Scanner extends SwingWorker<Void,Void>{
             }
             totalFileCount++;
             if (totalFileCount % 10 == 0) {
-            collector.setMessage(String.format("Found %s of %s in %d Diectories.", extractFileCount, totalFileCount, dirCount));
-        }
+                Date end = new Date();
+                lapTime = (end.getTime() - start.getTime()) / 1000;
+                collector.setMessage(String.format("Found: %,d Files (%.1f MB) in %,d Files. "
+                        + "(%.1f Seconds) ...", 
+                        getExtractFileCount(), getFileSize() / 1048567, 
+                        getTotalFileCount(), lapTime));
+            }
         }
     }
-	
+
+    public boolean isSubDirChecked(String dir) {
+        int cnt = 0;
+        for (String jobDir : jobDirs) {
+            if (jobDir.startsWith(dir)) {
+                cnt++;
+            }
+        }
+        if (cnt > 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean isOfficeFile(File file) {
         for (String extension : okFileExtention) {
             if (file.getName().toLowerCase().endsWith(extension.toLowerCase())) {
@@ -186,19 +157,7 @@ public class Scanner extends SwingWorker<Void,Void>{
         }
         return false;
     }
-	
-    public void printProcessingInfo(File dir) {
-        System.out.format("%,d Files (%.1f MB) extracted in %,d Dirs, "
-                + "%,d Files --> next folder [%s] : %.1f Seconds ...%n",
-                getExtractFileCount(), getFileSize() / 1048567,
-                getDirCount(), getTotalFileCount(), dir.getAbsolutePath(), lapTime);
-        Companion.logger.log(Level.INFO, 
-                String.format("%,d Files (%.1f MB) extracted in %,d Dirs, "
-                + "%,d Files --> next folder [%s] : %.1f Seconds ...%n",
-                getExtractFileCount(), getFileSize() / 1048567,
-                getDirCount(), getTotalFileCount(), dir.getAbsolutePath(), lapTime));
-    }    
-   
+	  
     public double getFileSize() {
         return fileSize;
     }
@@ -213,9 +172,5 @@ public class Scanner extends SwingWorker<Void,Void>{
 
     public int getDirCount() {
         return dirCount;
-    }
-
-    public int getCompletedTopDir() {
-        return completedTopDir;
-    }    
+    }  
 }

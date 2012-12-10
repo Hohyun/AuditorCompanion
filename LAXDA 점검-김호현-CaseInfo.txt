@@ -1,0 +1,8 @@
+Case Name: [김호현] LAXDA 점검
+Auditor: 김호현
+Target Directory: F:\LAXDA
+Files Directory: F:\LAXDA\Files
+Index Directory: F:\LAXDA\Index
+Date & Time: 2012-11-08 16:02:02
+Case Info : LAXDA 점검-김호현-CaseInfo.txt
+File List : LAXDA 점검-김호현-FileList.txt

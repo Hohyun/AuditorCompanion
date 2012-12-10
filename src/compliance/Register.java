@@ -7,8 +7,13 @@ package compliance;
 import compliance.Companion.DocLang;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.logging.Level;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -199,8 +204,26 @@ public class Register extends javax.swing.JDialog {
                     collector.setMessage(String.format(" Error: couldn't create %s\\Keywords",
                             f.getAbsolutePath()));
                 }
-            }         
-           
+            }
+            URL resourceUrl = Companion.class.getResource("Sample.kwd");
+            if (resourceUrl != null) {
+                byte[] buffer = new byte[1024];
+                int byteCount = 0;
+                InputStream inputStream = null;
+                OutputStream outputStream = null;
+                try {
+                    inputStream = resourceUrl.openStream();
+                    outputStream = new FileOutputStream(new File(f, "Sample.kwd"));
+                    while ((byteCount = inputStream.read(buffer)) >= 0) {
+                        outputStream.write(buffer, 0, byteCount);
+                    }
+                    inputStream.close();
+                    outputStream.flush();
+                    outputStream.close();
+                } catch (IOException | NullPointerException ex) {
+                    Companion.logger.log(Level.SEVERE, null, ex);
+                }
+            }    
             String caseName = String.format("[ %s ] - %s", textCaseName.getText(), textAuditor.getText());
             collector.setCaseName(caseName);
             
