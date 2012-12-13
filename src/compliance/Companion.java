@@ -82,7 +82,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }
     
     public static enum DocLang {
-        English, Korean, Japanese
+        English, Korean, Japanese, Chinese
     }
     
     public static enum Stage {
