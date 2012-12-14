@@ -6,14 +6,19 @@ package compliance;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
 import org.apache.lucene.analysis.kr.KoreanAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexNotFoundException;
@@ -79,8 +84,11 @@ public class Searcher {
     
     public void search() throws IOException {
         QueryParser parser = new QueryParser(Version.LUCENE_36, "contents", analyzer);
+        //parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
         try {
             query = parser.parse(queryString);
+            System.out.println(query.toString());
+            //query = query.rewrite(reader);
         } catch (ParseException ex) {
             System.out.println(ex);
             JOptionPane.showMessageDialog(companion, "질의어를 해석할 수 없습니다\n질의어를 다시 확인해 주세요.",
@@ -90,6 +98,8 @@ public class Searcher {
 
         formatter = new SimpleHTMLFormatter("<b>", "</b>");
         queryScorer = new QueryScorer(query);
+        // changed
+        queryScorer.setExpandMultiTermQuery(true);
         highlighter = new Highlighter(formatter, queryScorer);
         highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, FRAGMENT_SIZE));
         highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
@@ -136,8 +146,9 @@ public class Searcher {
 
     public String getHighlightedText(int docId, String fieldName, Document doc) 
             throws IOException, InvalidTokenOffsetsException {
-        TokenStream stream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
+        TokenStream stream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);       
         QueryScorer scorer = new QueryScorer(query, fieldName);
+        
         // fragment의 size를 내용전체 크기와 같게 하여 1개로 잘리게 한다.
         Fragmenter fragmenter = new SimpleFragmenter(doc.get("contents").length());
         highlighter = new Highlighter(formatter, scorer);
@@ -152,7 +163,19 @@ public class Searcher {
         highlighted = htmlHeader + highlighted + htmlFooter;
         return highlighted.replaceAll("\n", "<br>");
     }    
-     
+    
+    public String getHighlightedText(String queryString, Document doc) {   
+        // ps -- pattern string
+        String ps = queryString.replaceAll("AND|OR|\\+|\\*", "");
+        ps = ps.replaceAll("\\s+", "|");
+        ps = "(" + ps +")";
+        Pattern p = Pattern.compile(ps, Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(doc.get("contents"));
+        highlighted = m.replaceAll("<b>$1</b>");
+        highlighted = htmlHeader + highlighted + htmlFooter;
+        return highlighted.replaceAll("\n", "<br>");
+    }
+    
     public TextFragment[] getHighlightedFragments(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {			    
 	    TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
 	    return highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
@@ -166,6 +189,7 @@ public class Searcher {
   
         TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
         QueryScorer scorer = new QueryScorer(query, fieldName);
+        scorer.setExpandMultiTermQuery(true);
         Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, FRAGMENT_SIZE);
         highlighter = new Highlighter(formatter, scorer);
         highlighter.setTextFragmenter(fragmenter);
@@ -197,9 +221,54 @@ public class Searcher {
         return model1;
     }
     
+    public MyTableModel getModelForFragment(String queryString, Document doc) {   
+        List<String> snippets = new ArrayList<>();
+        String contents = doc.get("contents");
+        
+        int count = contents.length() / FRAGMENT_SIZE;
+        int pos = 0;
+        for (int i=0; i <= count; i++) {
+            int start = pos;
+            int end;
+            if (i == count) {
+                end = contents.length();
+            } else {
+                end = (i+1) * FRAGMENT_SIZE;
+            }
+            pos = end;
+            while (pos < contents.length()) {
+                String c = contents.substring(pos, pos+1);
+                if (" ".equals(c) || "\n".equals(c)) {
+                    break;
+                }
+                pos++;
+            }
+
+            String ps = queryString.replaceAll("AND|OR|\\+|\\*", "");
+            ps = ps.replaceAll("\\s+", "|");
+            ps = "(" + ps +")";
+            Pattern p = Pattern.compile(ps, Pattern.CASE_INSENSITIVE);
+            String snippet = contents.substring(start, pos);
+            Matcher m = p.matcher(snippet);
+            if (m.find()) {
+                snippets.add(m.replaceAll("<b>$1</b>"));
+            }
+        }
+        
+        String[] columnNames = {"찾은 글 조각"};
+        Object[][] data = {};
+        data = new Object[snippets.size()][1];
+            for (int i = 0; i < snippets.size(); i++) {
+                data[i][0] = htmlHeader + snippets.get(i) + htmlFooter;
+            }
+        MyTableModel model1 = new MyTableModel(data, columnNames);
+        return model1;
+    }
+    
     public String getHighlightedFragmentsText(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
         TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
         QueryScorer scorer = new QueryScorer(query, fieldName);
+        scorer.setExpandMultiTermQuery(true);
 //        Fragmenter fragmenter = new SimpleFragmenter(FRAGMENT_SIZE);
         Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, FRAGMENT_SIZE);
         highlighter = new Highlighter(formatter, scorer);
@@ -228,16 +297,19 @@ public class Searcher {
         Document doc;
         try {
             doc = indexSearcher.doc(scoreDoc.doc);
+            // First, try to get highlight usning lucene highlighter
             highlighted = getHighlightedText(scoreDoc.doc, "contents", doc);
             
+            MyTableModel model1 = null;
             if ((htmlHeader + htmlFooter).equals(highlighted)) {
-                highlighted = htmlHeader + doc.get("contents") + htmlFooter;
-                companion.setContentsArea(highlighted.replaceAll("\n", "<br>"));
-                companion.initFragmentTable();
+                // if fails, get highlighted using regex
+                highlighted = getHighlightedText(queryString, doc);                
+                model1 = getModelForFragment(queryString, doc);
             } else { 
-                companion.setContentsArea(highlighted);
-                companion.setFragmentTable(getModelForFragment(scoreDoc.doc, "contents", doc));
-            }                
+                model1 = getModelForFragment(scoreDoc.doc, "contents", doc);
+            }    
+            companion.setContentsArea(highlighted);
+            companion.setFragmentTable(model1);
             
             // Metadata
             String metaString = "";
@@ -289,8 +361,12 @@ public class Searcher {
         }
         companion.setContentsAreaCaretPosition(0);
     }   
-    
-       public void setIndexDir(String dir) {
+
+    public String regexHighlight(String query_string, String contents_string) {
+        String[] words = query_string.split("\\s");
+        return "";
+    }
+    public void setIndexDir(String dir) {
         indexDir = dir;
     }
     
@@ -314,6 +390,9 @@ public class Searcher {
                 case "Japanese":
                     analyzer = new JapaneseAnalyzer(Version.LUCENE_36);
                     break;
+                case "Chinese":
+                    analyzer = new CJKAnalyzer(Version.LUCENE_36);
+                    break;                    
             }
         } catch (IOException e) {
             System.out.println(e);
