@@ -13,6 +13,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.*;
@@ -49,6 +50,7 @@ import javax.swing.tree.TreePath;
 public final class Companion extends javax.swing.JFrame implements TreeCheckingListener, 
     TableModelListener, ListSelectionListener {
 
+    public boolean isAuthorized = false;
     public Searcher searcher;
     public final static Logger logger = Logger.getLogger(Companion.class.getName());
     //private String queryString;
@@ -95,11 +97,24 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
      */
     public Companion()  {
         searcher = new Searcher(this);
+        checkPassword();
         initComponents();
         initCollector();
         initAdvisor();
         setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         setVisible(true);
+    }
+    
+    @SuppressWarnings("empty-statement")
+    public void checkPassword() {
+        Login login = new Login(this, true);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        login.setLocation((dim.width-login.getWidth())/2, 
+                (dim.height-login.getHeight())/2);
+        login.setVisible(true);
+        if (!login.isAuthorized()) {
+            System.exit(0);
+        };
     }
     
     // 화면 초기화 (Treeview) 시작
@@ -1061,8 +1076,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
 
         mainTabbedPane.addTab("Advisor", new javax.swing.ImageIcon(getClass().getResource("/compliance/images/About16.gif")), advisorP); // NOI18N
 
-        mainTabbedPane.setSelectedIndex(2);
-
         jMenu1.setText("파일");
 
         menuItemExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
@@ -1683,12 +1696,12 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                    Companion searcher = new Companion();
-                    Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
+                Companion searcher = new Companion();
+                Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
                             .getResource("images/Search-Search-icon.png"));
-                    searcher.setIconImage(icon);
-                    searcher.initResultTable();
-                    searcher.setVisible(true);
+                searcher.setIconImage(icon);
+                searcher.initResultTable();
+                searcher.setVisible(true);
             }
         });
     }
@@ -1879,6 +1892,10 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     
     public String getIndexDir() {
         return indexDir;
+    }
+    
+    public void setIsAuthorized(boolean isAuthorized) {
+        this.isAuthorized = isAuthorized;
     }
     
     public void setAuditor(String name) {

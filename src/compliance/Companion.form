@@ -206,7 +206,6 @@
   <SubComponents>
     <Container class="javax.swing.JTabbedPane" name="mainTabbedPane">
       <Properties>
-        <Property name="selectedIndex" type="int" value="2"/>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="&#xb9d1;&#xc740; &#xace0;&#xb515;" size="12" style="1"/>
         </Property>
