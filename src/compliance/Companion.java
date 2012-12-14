@@ -50,7 +50,7 @@ import javax.swing.tree.TreePath;
 public final class Companion extends javax.swing.JFrame implements TreeCheckingListener, 
     TableModelListener, ListSelectionListener {
 
-    private final String PROGRAM_VERSION = "Ver 1.1 (2012.12)";
+    private final String PROGRAM_VERSION = "- Ver 1.1 (2012.12)";
     public boolean isAuthorized = false;
     public Searcher searcher;
     public final static Logger logger = Logger.getLogger(Companion.class.getName());
