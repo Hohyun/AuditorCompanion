@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
 import org.apache.lucene.analysis.kr.KoreanAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -62,6 +63,8 @@ public class Indexer extends SwingWorker <Void, Void> {
                 analyzer = new StandardAnalyzer(Version.LUCENE_36);
             } else if (lang == DocLang.Japanese) {
                 analyzer = new JapaneseAnalyzer(Version.LUCENE_36);
+            } else if (lang == DocLang.Chinese) {
+                analyzer = new CJKAnalyzer(Version.LUCENE_36);
             }
         } catch (IOException ex) {
             System.out.println(ex);
@@ -92,7 +95,7 @@ public class Indexer extends SwingWorker <Void, Void> {
     }
 
     public void indexDocs(IndexWriter writer, File file) throws IOException{
-        if (file.canRead()) {
+        if (file.canRead() && file.exists()) {
             if (file.isDirectory()) {
                 String[] files = file.list();
                 // an IO error could occur
