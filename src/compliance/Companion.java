@@ -50,6 +50,7 @@ import javax.swing.tree.TreePath;
 public final class Companion extends javax.swing.JFrame implements TreeCheckingListener, 
     TableModelListener, ListSelectionListener {
 
+    private final String PROGRAM_VERSION = "Ver 1.1 (2012.12)";
     public boolean isAuthorized = false;
     public Searcher searcher;
     public final static Logger logger = Logger.getLogger(Companion.class.getName());
@@ -108,6 +109,9 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     @SuppressWarnings("empty-statement")
     public void checkPassword() {
         Login login = new Login(this, true);
+        Image icon = Toolkit.getDefaultToolkit().getImage(getClass()
+                            .getResource("images/Search-Search-icon.png"));
+        login.setIconImage(icon);
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         login.setLocation((dim.width-login.getWidth())/2, 
                 (dim.height-login.getHeight())/2);
@@ -1251,7 +1255,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         JOptionPane.showMessageDialog(this, "Auditor's Companion for Korean Air\n\n"
                 + "- 주요기능 : 문서 자동 수집, 키워드 검색\n"
                 + "- Developed by H.H.Kim (SELBI)\n"
-                + "- Ver 1.0 (2012.11)");
+                + PROGRAM_VERSION);
     }//GEN-LAST:event_menuItemAboutActionPerformed
 
     private void buttonClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonClearActionPerformed
