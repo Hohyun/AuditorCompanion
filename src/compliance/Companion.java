@@ -52,7 +52,7 @@ import javax.swing.tree.TreePath;
 public final class Companion extends javax.swing.JFrame implements TreeCheckingListener, 
     TableModelListener, ListSelectionListener {
 
-    private final String PROGRAM_VERSION = "- Ver 1.1 (2012.12)";
+    private final String PROGRAM_VERSION = "- Ver 1.2 (2012.12)";
     public final static Logger logger = Logger.getLogger(Companion.class.getName());
     public boolean isAuthorized = false;
     public Searcher searcher;
@@ -128,8 +128,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         infoTable.getSelectionModel().addListSelectionListener(this);
         initInfoTable();
         //hSP1s.setDividerLocation(450);
-        setStage(Stage.BEFORE_STARTED);
-                
+        setStage(Stage.BEFORE_STARTED);         
     }
          
     private JPanel folderInitComponents() {
@@ -1260,6 +1259,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_buttonSearchActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // properties 저장
         try {
             propManager.writeProperties();
         } catch (IOException ex) {
@@ -1332,7 +1332,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }
     
     private void pageTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pageTextActionPerformed
-//        int pageNo = searcher.page.getCurrentPageNo();
         int pageNo = searcher.getPageNo();
         try {
             pageNo = Integer.parseInt(pageText.getText());
@@ -1344,7 +1343,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
             JOptionPane.showMessageDialog(null, "Page range is out of bound.", "Page No Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        //searcher.page.setCurrentPageNo(pageNo);
         searcher.setPageNo(pageNo);
         try {
             searcher.search();
@@ -1354,7 +1352,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_pageTextActionPerformed
 
     private void buttonLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLastActionPerformed
-//        searcher.page.setCurrentPageNo(searcher.page.getPageCount());
         searcher.setPageNo(searcher.page.getPageCount());
         try {
             searcher.search();
@@ -1364,7 +1361,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_buttonLastActionPerformed
 
     private void buttonNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNextActionPerformed
-//        searcher.page.setCurrentPageNo(searcher.page.getCurrentPageNo()+1);
         searcher.setPageNo(searcher.getPageNo()+1);
         try {
             searcher.search();
@@ -1374,7 +1370,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_buttonNextActionPerformed
 
     private void buttonBeforeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBeforeActionPerformed
-//        searcher.page.setCurrentPageNo(searcher.page.getCurrentPageNo()-1);
         searcher.setPageNo(searcher.getPageNo()-1);
         try {
             searcher.search();
@@ -1384,7 +1379,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_buttonBeforeActionPerformed
 
     private void buttonFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonFirstActionPerformed
-//        searcher.page.setCurrentPageNo(1);
         searcher.setPageNo(1);
         try {
             searcher.search();
@@ -1406,7 +1400,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_resultTableFocusGained
 
     private void resultTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_resultTableKeyReleased
-        // TODO add your handling code here:
         resultTable.setSelectionForeground(Color.WHITE);
         searcher.setContentsAndMetaArea(resultTable.getSelectedRow());
     }//GEN-LAST:event_resultTableKeyReleased
@@ -1417,7 +1410,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 (this.getHeight()-register.getHeight())/2);
         register.setVisible(true);
         if (caseName.equals("") || auditor.equals("") || caseDir.equals("")) {
-            // setMessage(" Case was not created. Case Name, Auditor and Target Directory information should be supplied");
+            // do nothing
         } else {
             try {
                 setStage(Stage.CASE_CREATED);
@@ -1429,7 +1422,6 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_buttonNewActionPerformed
 
     private void buttonScanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonScanActionPerformed
-        // TODO add your handling code here:
         if (caseName.equals("")) {
             JOptionPane.showMessageDialog(null, "Please create \"New case\" before analyzing! ", 
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -1444,37 +1436,31 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
         //progressBar.setStringPainted(true);
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         checkManualFileTypes();
-        compliance.Scanner analyzer = new compliance.Scanner(jobDirs, jobFileTypes, caseDir, fileListFile, this);   
-        analyzer.setParent(this);
-        //analyzer.addPropertyChangeListener(this);
-        analyzer.execute();        
+        compliance.Scanner scanner = new Scanner(jobDirs, jobFileTypes, caseDir, fileListFile, this);   
+        scanner.setParent(this);
+        scanner.execute();        
     }//GEN-LAST:event_buttonScanActionPerformed
 
     private void buttonCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonCopyActionPerformed
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         model = (MyTableModel) infoTable.getModel();
         Copier copier = new Copier(model, this);
-        //copier.addPropertyChangeListener(this);
         copier.execute();
     }//GEN-LAST:event_buttonCopyActionPerformed
 
     private void buttonIndexActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonIndexActionPerformed
-        // TODO add your handling code here:
        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
        if (stage == Stage.COPY_COMPLETED) {
            Indexer indexer = new Indexer(indexDir, fileDir, docLang, this);
-           //indexer.addPropertyChangeListener(this);
            indexer.execute();
        } else if (stage == Stage.ANALYZE_COMPLETED || stage == Stage.CASE_LOADED) {
            model = (MyTableModel) infoTable.getModel();
            IndexerB indexerB = new IndexerB(indexDir, model, docLang, this);
-           //indexerB.addPropertyChangeListener(this);
            indexerB.execute();           
        }
     }//GEN-LAST:event_buttonIndexActionPerformed
 
     private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
-        // TODO add your handling code here:
         setStage(Stage.BEFORE_STARTED);
         Object[][] data = {};
         String[] columnNames = {};
@@ -1493,7 +1479,7 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
     }//GEN-LAST:event_menuItemMakeCaseActionPerformed
 
     private void menuItemLoadCaseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemLoadCaseActionPerformed
-                Properties prop = propManager.properties;
+        Properties prop = propManager.properties;
         String scannedFile = prop.getProperty("scannedFile");
         if (!"".equals(scannedFile)) { 
             try {
@@ -1521,8 +1507,12 @@ public final class Companion extends javax.swing.JFrame implements TreeCheckingL
                 setCaseLabel(prop.getProperty(caseString));
                 
                 File f = new File(prop.getProperty("scannedFile"));
-                setInfoTable(f);
-                setFileListFile(f);
+                if (f.exists()) {
+                    setInfoTable(f);
+                    setFileListFile(f);
+                } else {
+                    setMessage(" Fail to read scanned file list!");
+                }
             } catch (IOException ex) {
                 System.out.println(ex);
             }
