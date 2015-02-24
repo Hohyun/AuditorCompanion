@@ -150,7 +150,8 @@ public class Login extends javax.swing.JDialog {
 
     public void checkPassword() {
 
-        if (password.getPassword().length != 7) {
+        if (password.getPassword().length < 7 || 
+                password.getPassword().length > 8) {
             authorized =false;
             return;
         }

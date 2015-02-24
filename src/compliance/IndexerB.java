@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.logging.Level;
 import javax.swing.SwingWorker;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.analysis.ja.JapaneseAnalyzer;
 import org.apache.lucene.analysis.kr.KoreanAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -62,6 +63,8 @@ public class IndexerB extends SwingWorker <Void, Void> {
                 analyzer = new KoreanAnalyzer(Version.LUCENE_36);
             } else if (lang == DocLang.Japanese) {
                 analyzer = new JapaneseAnalyzer(Version.LUCENE_36);
+            } else if (lang == DocLang.Chinese) {
+                analyzer = new CJKAnalyzer(Version.LUCENE_36);
             }
         } catch (IOException ex) {
             System.out.println(ex);
@@ -71,18 +74,6 @@ public class IndexerB extends SwingWorker <Void, Void> {
         this.model = model;
     }
 
-    @Override
-    protected Void doInBackground() throws Exception {     
-        makeIndex();
-        return null;
-    }
-    
-    @Override
-    public void done() {
-        collector.setCursor(null);
-        collector.setStage(Stage.INDEX_CREATED);
-    }    
-   
     public void makeIndex() {
         System.out.println("Indexing to directiory");
         try {
@@ -168,4 +159,35 @@ public class IndexerB extends SwingWorker <Void, Void> {
         } 
     }
 
+    
+    @Override
+    protected Void doInBackground() throws Exception {     
+        makeIndex();
+        return null;
+    }
+    
+    @Override
+    public void done() {
+        collector.setCursor(null);
+        collector.setStage(Stage.INDEX_CREATED);
+        initSearcher();
+    }    
+   
+    public void initSearcher() {
+        Properties prop = collector.propManager.properties;
+        collector.setIndexDir(prop.getProperty("indexDir"));
+        collector.searcher.setIndexDir(prop.getProperty("indexDir"));
+        collector.searcher.initSearcher();           
+        collector.searcher.setAnalyzer(prop.getProperty("language"));
+        collector.setIndexInfolabel(String.format("%s (%s Analyzer)", 
+                prop.getProperty("indexDir"), 
+                prop.getProperty("language")));
+        collector.searcher.setPageSize(Integer.parseInt(prop.getProperty("countPerPage")));
+        
+        collector.setNavigateButtonsDisable();
+        collector.setEnableSearchButton();
+        collector.setEnableKeywordLoadButton();
+        collector.setEnableKeywordSaveButton();
+    }
+    
 }

@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -48,6 +49,7 @@ import org.apache.lucene.util.Version;
 public class Searcher {
     
     private Companion companion;
+    private Properties properties;
     private String queryString;
     private String indexDir;
     public Page page;
@@ -69,6 +71,7 @@ public class Searcher {
     public Searcher(Companion companion) {
         this.companion = companion;
         page = new Page(1);
+        this.properties = companion.propManager.properties;
     }
  
     public void initSearcher() {
@@ -87,8 +90,7 @@ public class Searcher {
         //parser.setMultiTermRewriteMethod(MultiTermQuery.SCORING_BOOLEAN_QUERY_REWRITE);
         try {
             query = parser.parse(queryString);
-            System.out.println(query.toString());
-            //query = query.rewrite(reader);
+            properties.setProperty("queryString", queryString);
         } catch (ParseException ex) {
             System.out.println(ex);
             JOptionPane.showMessageDialog(companion, "질의어를 해석할 수 없습니다\n질의어를 다시 확인해 주세요.",
@@ -175,12 +177,7 @@ public class Searcher {
         highlighted = htmlHeader + highlighted + htmlFooter;
         return highlighted.replaceAll("\n", "<br>");
     }
-    
-    public TextFragment[] getHighlightedFragments(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {			    
-	    TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
-	    return highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
-	}
-    
+      
     public MyTableModel getModelForFragment(int docId, String fieldName, Document doc)
             throws IOException, InvalidTokenOffsetsException {
         String[] columnNames = {"찾은 글 조각"};
@@ -264,29 +261,7 @@ public class Searcher {
         MyTableModel model1 = new MyTableModel(data, columnNames);
         return model1;
     }
-    
-    public String getHighlightedFragmentsText(int docId, String fieldName, Document doc) throws IOException, InvalidTokenOffsetsException {
-        TokenStream tokenStream = TokenSources.getAnyTokenStream(reader, docId, fieldName, doc, analyzer);
-        QueryScorer scorer = new QueryScorer(query, fieldName);
-        scorer.setExpandMultiTermQuery(true);
-//        Fragmenter fragmenter = new SimpleFragmenter(FRAGMENT_SIZE);
-        Fragmenter fragmenter = new SimpleSpanFragmenter(scorer, FRAGMENT_SIZE);
-        highlighter = new Highlighter(formatter, scorer);
-        highlighter.setTextFragmenter(fragmenter);
-        highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
-                
-        TextFragment[] frags = highlighter.getBestTextFragments(tokenStream, doc.get(fieldName), false, MAX_FRAGMENT_COUNT);
-        StringBuilder sb = new StringBuilder();
-        
-	for (int i = 0; i < frags.length; i++) {
-           if ((frags[i] != null) && (frags[i].getScore() > 0)) {
-               sb.append(frags[i].toString()).append("...<hr>");
-           }
-       }      
-       highlighted = htmlHeader + sb.toString() + htmlFooter;
-       return highlighted.replaceAll("\n", "<br>");
-    }
-               
+                  
     public void setContentsAndMetaArea(int row) {
         highlighted = "";
         if (model.getValueAt(row, 0) == null) {
@@ -406,6 +381,11 @@ public class Searcher {
     
     public void setPageNo(int pageNo) {
         page.setCurrentPageNo(pageNo);
+        properties.setProperty("currentPage", String.valueOf(pageNo));
+    }
+    
+    public int getPageNo() {
+        return page.getCurrentPageNo();
     }
     
     public int getFragmentSize() {

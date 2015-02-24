@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.Properties;
 import java.util.logging.Level;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -22,9 +23,10 @@ import javax.swing.JOptionPane;
  *
  * @author hohkim
  */
-public class Register extends javax.swing.JDialog {
+public final class Register extends javax.swing.JDialog {
 
     private Companion collector;
+    private Properties properties;
     /**
      * Creates new form Register
      */
@@ -32,6 +34,14 @@ public class Register extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         collector = (Companion)parent;
+        initFields();
+    }
+    
+    public void initFields() {
+        properties = collector.propManager.properties;
+        textCaseName.setText(properties.getProperty("caseName"));
+        textAuditor.setText(properties.getProperty("auditor"));
+        textTarget.setText(properties.getProperty("caseDir"));       
     }
 
     /**
@@ -95,7 +105,7 @@ public class Register extends javax.swing.JDialog {
 
         jLabel2.setText("Document Language:");
 
-        comboLanguage.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Korean", "English", "Japanease" }));
+        comboLanguage.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Korean", "English", "Japanese", "Chinese" }));
         comboLanguage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboLanguageActionPerformed(evt);
@@ -163,8 +173,7 @@ public class Register extends javax.swing.JDialog {
 
     private void buttonTargetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonTargetActionPerformed
         JFileChooser chooser = new JFileChooser();
-        // 아래 줄 나중에 바꿀 것
-        // chooser.setCurrentDirectory(new java.io.File("C:\\Temp"));
+        chooser.setCurrentDirectory(new java.io.File(properties.getProperty("caseDir")));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         
@@ -182,13 +191,28 @@ public class Register extends javax.swing.JDialog {
                     "Case Registration Error", JOptionPane.ERROR_MESSAGE);
         } else {
             collector.setAuditor(textAuditor.getText());
+            properties.setProperty("auditor", textAuditor.getText());
             
-            // Set Case Directory & File Directory & Index Directory
             collector.setCaseDir(textTarget.getText());
+            properties.setProperty("caseDir", textTarget.getText());
+            
             collector.setFileDir(textTarget.getText() + "\\Files");
+            properties.setProperty("filesDir", textTarget.getText() + "\\Files");
+            
             collector.setIndexDir(textTarget.getText() + "\\Index");
+            properties.setProperty("indexDir", textTarget.getText() + "\\Index");
+             
+            // Case directory creation
+            File f = new File(textTarget.getText());
+            if (!f.exists()) {
+                 boolean isFileDirCreated = f.mkdir();
+                if (!isFileDirCreated) {
+                    collector.setMessage(String.format(" Error: couldn't create %s\\Files",
+                            f.getAbsolutePath()));
+                }               
+            }
             // File directory creation
-            File f = new File(textTarget.getText(), "Files");
+            f = new File(textTarget.getText(), "Files");
             if (!f.exists()) {
                 boolean isFileDirCreated = f.mkdir();
                 if (!isFileDirCreated) {
@@ -226,25 +250,31 @@ public class Register extends javax.swing.JDialog {
             }    
             String caseName = String.format("[ %s ] - %s", textCaseName.getText(), textAuditor.getText());
             collector.setCaseName(caseName);
+            properties.setProperty("caseName", textCaseName.getText());
             
-            String caseInfo = String.format("%s (%s) Case.info", textCaseName.getText(), 
-                    textAuditor.getText());
-            File caseInfoFile = new File(textTarget.getText(), caseInfo);
-            collector.setCaseInfoFile(caseInfoFile);   
+//            String caseInfo = String.format("%s (%s) Case.info", textCaseName.getText(), 
+//                    textAuditor.getText());
+//            File caseInfoFile = new File(textTarget.getText(), caseInfo);
+//            collector.setCaseInfoFile(caseInfoFile);   
             
-            String fileList = String.format("%s (%s) Files.txt", textCaseName.getText(), 
-                    textAuditor.getText());
-            File fileListFile = new File(textTarget.getText(), fileList);
+            File fileListFile = new File(textTarget.getText(), "scan_file_list.txt");
             collector.setFileListFile(fileListFile);
+            properties.setProperty("scannedFile", fileListFile.getAbsolutePath());
             // Document Language Setting
             if (comboLanguage.getSelectedIndex() == 0) {
                 collector.setDocLang(DocLang.Korean);
+                properties.setProperty("language", "Korean");
             } else if (comboLanguage.getSelectedIndex() == 1) {
                 collector.setDocLang(DocLang.English);
-            } if (comboLanguage.getSelectedIndex() == 2) {
+                properties.setProperty("language", "English");
+            } else if (comboLanguage.getSelectedIndex() == 2) {
                 collector.setDocLang(DocLang.Japanese);
+                properties.setProperty("language", "Japanese");
+            } else if (comboLanguage.getSelectedIndex() == 3) {
+                collector.setDocLang(DocLang.Chinese);
+                properties.setProperty("language", "Chinese");
             } 
-            createCaseInfoFile(caseName, caseInfoFile, fileListFile);
+//            createCaseInfoFile(caseName, caseInfoFile, fileListFile);
             this.dispose();
         }
     }//GEN-LAST:event_buttonOKActionPerformed

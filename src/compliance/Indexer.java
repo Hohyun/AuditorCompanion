@@ -171,5 +171,23 @@ public class Indexer extends SwingWorker <Void, Void> {
     public void done() {
         collector.setCursor(null);
         collector.setStage(Stage.INDEX_CREATED);
+        initSearcher();
+    }
+    
+    public void initSearcher() {
+        Properties prop = collector.propManager.properties;
+        collector.setIndexDir(prop.getProperty("indexDir"));
+        collector.searcher.setIndexDir(prop.getProperty("indexDir"));
+        collector.searcher.initSearcher();           
+        collector.searcher.setAnalyzer(prop.getProperty("language"));
+        collector.setIndexInfolabel(String.format("%s (%s Analyzer)", 
+                prop.getProperty("indexDir"), 
+                prop.getProperty("language")));
+        collector.searcher.setPageSize(Integer.parseInt(prop.getProperty("countPerPage")));
+        
+        collector.setNavigateButtonsDisable();
+        collector.setEnableSearchButton();
+        collector.setEnableKeywordLoadButton();
+        collector.setEnableKeywordSaveButton();
     }
 }

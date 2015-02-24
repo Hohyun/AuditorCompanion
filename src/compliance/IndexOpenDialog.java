@@ -4,6 +4,7 @@
  */
 package compliance;
 
+import java.util.Properties;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -11,9 +12,10 @@ import javax.swing.JOptionPane;
  *
  * @author hohkim
  */
-public class IndexOpenDialog extends javax.swing.JDialog {
+public final class IndexOpenDialog extends javax.swing.JDialog {
 
     Companion companion;
+    Properties properties;
     /**
      * Creates new form IndexOpenDialog
      */
@@ -21,8 +23,31 @@ public class IndexOpenDialog extends javax.swing.JDialog {
         super(parent, modal);
         companion = (Companion) parent;
         initComponents();
+        initFields();
     }
 
+    public void initFields() {
+        properties = companion.propManager.properties;
+        indexLbl.setText(properties.getProperty("indexDir"));
+        
+        switch (properties.getProperty("language")) {
+            case "Korean" : languageCmb.setSelectedIndex(0); break;
+            case "English" : languageCmb.setSelectedIndex(1); break;
+            case "Japanese" : languageCmb.setSelectedIndex(2); break;                
+            case "Chinese" : languageCmb.setSelectedIndex(3); break;                
+        }
+        
+        int pageSize = Integer.parseInt(properties.getProperty("countPerPage"));
+        switch (pageSize) {
+            case 10 : pageSizeCmb.setSelectedIndex(0); break;
+            case 20 : pageSizeCmb.setSelectedIndex(1); break;                
+            case 30 : pageSizeCmb.setSelectedIndex(2); break;
+            case 40 : pageSizeCmb.setSelectedIndex(3); break;    
+            case 50 : pageSizeCmb.setSelectedIndex(4); break;                
+            case 100 : pageSizeCmb.setSelectedIndex(5); break;
+            case 1000 : pageSizeCmb.setSelectedIndex(6); break;                
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -54,7 +79,7 @@ public class IndexOpenDialog extends javax.swing.JDialog {
         });
 
         languageCmb.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        languageCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Korean", "English", "Japanese", " " }));
+        languageCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Korean", "English", "Japanese", "Chinese", " " }));
 
         label3.setFont(new java.awt.Font("맑은 고딕", 1, 18)); // NOI18N
         label3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -88,8 +113,7 @@ public class IndexOpenDialog extends javax.swing.JDialog {
         label4.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         pageSizeCmb.setFont(new java.awt.Font("맑은 고딕", 0, 12)); // NOI18N
-        pageSizeCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "5", "10", "20", "30", "40", "50", "100", "200", "300", "400", "500" }));
-        pageSizeCmb.setSelectedIndex(3);
+        pageSizeCmb.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10", "20", "30", "40", "50", "100", "1000" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -115,7 +139,7 @@ public class IndexOpenDialog extends javax.swing.JDialog {
                                     .addComponent(indexBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(indexLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+                                    .addComponent(indexLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE)
                                     .addComponent(languageCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(pageSizeCmb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(39, 39, 39))))
@@ -149,9 +173,7 @@ public class IndexOpenDialog extends javax.swing.JDialog {
 
     private void indexBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_indexBtnActionPerformed
         JFileChooser chooser = new JFileChooser();
-        // 나중에 지울 것
-        chooser.setCurrentDirectory(new java.io.File("F:\\TEST2\\Index"));
-        // ----------------------------------
+        chooser.setCurrentDirectory(new java.io.File(indexLbl.getText()));
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
         
@@ -162,15 +184,28 @@ public class IndexOpenDialog extends javax.swing.JDialog {
 
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okBtnActionPerformed
         String indexDir = indexLbl.getText();    
-        if ("좌측 버튼을 눌러 선택해주세요.".equals(indexLbl.getText())) {
-            this.dispose();
-            return;
-        }
+        companion.setIndexDir(indexDir);
+        properties.setProperty("indexDir", indexDir);
         
         String language = (String) languageCmb.getSelectedItem();
+        switch (language) {
+            case "0" : 
+                properties.setProperty("languase", "Korean"); 
+                break;
+            case "1" :
+                properties.setProperty("languase", "English"); 
+                break;    
+            case "2" : 
+                properties.setProperty("languase", "Japanese"); 
+                break;
+            case "3" :
+                properties.setProperty("languase", "Chinese"); 
+                break;                    
+        }
+        
         String pageSize = (String) pageSizeCmb.getSelectedItem();
+        properties.setProperty("countPerPage", pageSize);
 
-        companion.setIndexDir(indexDir);
         companion.setNavigateButtonsDisable();
         companion.setEnableSearchButton();
         companion.setEnableKeywordLoadButton();
@@ -180,7 +215,7 @@ public class IndexOpenDialog extends javax.swing.JDialog {
         companion.searcher.setIndexDir(indexDir);
         companion.searcher.setAnalyzer(language);
         companion.searcher.setPageSize(Integer.parseInt(pageSize));
-        companion.setIndexInfolabel(String.format("%s - (%s Analyzer)", indexDir, language));
+        companion.setIndexInfolabel(String.format("%s (%s Analyzer)", indexDir, language));
         companion.searcher.initSearcher();
         this.dispose();
     }//GEN-LAST:event_okBtnActionPerformed
